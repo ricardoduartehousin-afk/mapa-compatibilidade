@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jornada Interior — Admin</title>
+<style>
+  :root {
+    --bg: #0f0f1a;
+    --surface: #1a1a2e;
+    --surface2: #252540;
+    --primary: #f97316;
+    --primary-hover: #ea580c;
+    --green: #10b981;
+    --yellow: #f59e0b;
+    --red: #ef4444;
+    --text: #e2e8f0;
+    --text-muted: #94a3b8;
+    --border: #2d2d4a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header h1 { font-size: 1.25rem; }
+  .header h1 span { color: var(--primary); }
+  .header .user-info { display: flex; align-items: center; gap: 0.75rem; }
+  .header .user-info span { color: var(--text-muted); font-size: 0.875rem; }
+  .btn-logout {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 0.375rem 0.875rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    font-size: 0.8rem;
+  }
+  .btn-logout:hover { background: var(--red); }
+  .container { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+  }
+  .stat-card .label { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .stat-card .value { font-size: 2rem; font-weight: 700; margin-top: 0.25rem; }
+  .stat-card.total .value { color: var(--primary); }
+  .stat-card.pendentes .value { color: var(--yellow); }
+  .stat-card.pagos .value { color: var(--green); }
+  .filters {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .filters input, .filters select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+  }
+  .filters input::placeholder { color: var(--text-muted); }
+  .filters input:focus, .filters select:focus { outline: none; border-color: var(--primary); }
+  .btn {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: background 0.2s;
+  }
+  .btn:hover { background: var(--primary-hover); }
+  .btn-secondary {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .btn-secondary:hover { background: var(--border); }
+  .btn-danger { background: var(--red); }
+  .btn-danger:hover { background: #dc2626; }
+  .btn-sm { padding: 0.375rem 0.75rem; font-size: 0.8rem; }
+  .table-container {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    background: var(--surface2);
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+  }
+  th:hover { color: var(--text); }
+  td {
+    padding: 0.75rem 1rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.875rem;
+  }
+  tr:hover td { background: rgba(249, 115, 22, 0.05); }
+  .badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .badge-pendente { background: rgba(245, 158, 11, 0.15); color: var(--yellow); }
+  .badge-pago { background: rgba(16, 185, 129, 0.15); color: var(--green); }
+  .actions { display: flex; gap: 0.375rem; }
+  .actions button { cursor: pointer; background: none; border: none; color: var(--text-muted); padding: 0.25rem; }
+  .actions button:hover { color: var(--text); }
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6);
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  .modal h2 { margin-bottom: 1rem; font-size: 1.1rem; }
+  .modal .field { margin-bottom: 0.75rem; }
+  .modal .field .label { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .modal .field .value { font-size: 0.95rem; margin-top: 0.15rem; }
+  .modal-close {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    width: 100%;
+  }
+  .modal-close:hover { background: var(--primary-hover); }
+  .login-screen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+  }
+  .login-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    padding: 2rem;
+    width: 340px;
+  }
+  .login-box h1 { text-align: center; margin-bottom: 1.5rem; font-size: 1.25rem; }
+  .login-box h1 span { color: var(--primary); }
+  .login-box input {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 0.375rem;
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+  }
+  .login-box input:focus { outline: none; border-color: var(--primary); }
+  .login-box .btn { width: 100%; margin-top: 0.5rem; }
+  .login-error { color: var(--red); font-size: 0.8rem; text-align: center; margin-top: 0.5rem; }
+  .pagination { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; border-top: 1px solid var(--border); }
+  .pagination .info { color: var(--text-muted); font-size: 0.8rem; }
+  .pagination .btns { display: flex; gap: 0.375rem; }
+  .empty-state { text-align: center; padding: 3rem; color: var(--text-muted); }
+  .toast {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 0.875rem 1.25rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    display: none;
+    animation: slideUp 0.3s ease;
+    z-index: 200;
+  }
+  .toast.show { display: block; }
+  .toast.success { border-color: var(--green); }
+  .toast.error { border-color: var(--red); }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(1rem); } to { opacity: 1; transform: translateY(0); } }
+  .refresh-btn { margin-left: auto; }
+  @media (max-width: 768px) {
+    .stats { grid-template-columns: 1fr; }
+    .filters { flex-direction: column; }
+    .table-container { overflow-x: auto; }
+  }
+</style>
+</head>
+<body>
+
+<div id="loginScreen" class="login-screen">
+  <div class="login-box">
+    <h1>Jornada <span>Interior</span></h1>
+    <p style="text-align:center;color:var(--text-muted);margin-bottom:1.25rem;font-size:0.875rem;">Painel Administrativo</p>
+    <input type="text" id="loginUser" placeholder="Usuário" autocomplete="username">
+    <input type="password" id="loginPass" placeholder="Senha" autocomplete="current-password">
+    <button class="btn" onclick="doLogin()">Entrar</button>
+    <p class="login-error" id="loginError"></p>
+  </div>
+</div>
+
+<div id="appScreen" style="display:none;">
+  <div class="header">
+    <h1>Jornada <span>Interior</span> — Admin</h1>
+    <div class="user-info">
+      <span id="userDisplay"></span>
+      <button class="btn-logout" onclick="doLogout()">Sair</button>
+    </div>
+  </div>
+  <div class="container">
+    <div class="stats">
+      <div class="stat-card total">
+        <div class="label">Total de Cadastros</div>
+        <div class="value" id="statTotal">—</div>
+      </div>
+      <div class="stat-card pendentes">
+        <div class="label">Pendentes</div>
+        <div class="value" id="statPendentes">—</div>
+      </div>
+      <div class="stat-card pagos">
+        <div class="label">Pagos</div>
+        <div class="value" id="statPagos">—</div>
+      </div>
+    </div>
+
+    <div class="filters">
+      <input type="text" id="searchInput" placeholder="Buscar por nome, email ou WhatsApp..." oninput="debouncedLoad()">
+      <select id="statusFilter" onchange="loadLeads()">
+        <option value="">Todos os status</option>
+        <option value="pendente">Pendentes</option>
+        <option value="pago">Pagos</option>
+      </select>
+      <input type="date" id="startDate" onchange="loadLeads()">
+      <input type="date" id="endDate" onchange="loadLeads()">
+      <button class="btn btn-secondary btn-sm" onclick="loadLeads()">Filtrar</button>
+      <button class="btn btn-sm" onclick="exportCSV()">Exportar CSV</button>
+      <button class="btn btn-secondary btn-sm refresh-btn" onclick="loadAll()">Atualizar</button>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th onclick="sortBy('id')">#</th>
+            <th onclick="sortBy('nomeP1')">Pessoa 1</th>
+            <th onclick="sortBy('nomeP2')">Pessoa 2</th>
+            <th onclick="sortBy('email')">Email</th>
+            <th onclick="sortBy('whatsapp')">WhatsApp</th>
+            <th onclick="sortBy('status')">Status</th>
+            <th onclick="sortBy('percentage')">%</th>
+            <th onclick="sortBy('createdAt')">Data</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="leadsTable"></tbody>
+      </table>
+      <div class="pagination" id="pagination"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="detailModal">
+  <div class="modal" id="detailContent"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = window.location.origin;
+let authToken = '';
+let leadsData = [];
+let sortField = 'createdAt';
+let sortDir = -1;
+let currentPage = 1;
+const PER_PAGE = 20;
+
+function getAuthHeaders() {
+  return { 'Authorization': 'Basic ' + authToken, 'Content-Type': 'application/json' };
+}
+
+function doLogin() {
+  const user = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value.trim();
+  if (!user || !pass) { document.getElementById('loginError').textContent = 'Preencha usuário e senha'; return; }
+  
+  authToken = btoa(user + ':' + pass);
+  
+  fetch(API + '/api/leads/stats', { headers: getAuthHeaders() })
+    .then(r => {
+      if (!r.ok) throw new Error('Credenciais inválidas');
+      return r.json();
+    })
+    .then(() => {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('appScreen').style.display = 'block';
+      document.getElementById('userDisplay').textContent = user;
+      loadAll();
+    })
+    .catch(() => {
+      document.getElementById('loginError').textContent = 'Usuário ou senha inválidos';
+      authToken = '';
+    });
+}
+
+function doLogout() {
+  authToken = '';
+  document.getElementById('appScreen').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+  document.getElementById('loginError').textContent = '';
+}
+
+function loadAll() {
+  loadStats();
+  loadLeads();
+}
+
+function loadStats() {
+  fetch(API + '/api/leads/stats', { headers: getAuthHeaders() })
+    .then(r => r.json())
+    .then(s => {
+      document.getElementById('statTotal').textContent = s.total;
+      document.getElementById('statPendentes').textContent = s.pendentes;
+      document.getElementById('statPagos').textContent = s.pagos;
+    })
+    .catch(() => showToast('Erro ao carregar estatísticas', 'error'));
+}
+
+function loadLeads() {
+  const status = document.getElementById('statusFilter').value;
+  const search = document.getElementById('searchInput').value.trim();
+  const startDate = document.getElementById('startDate').value;
+  const endDate = document.getElementById('endDate').value;
+  
+  let url = API + '/api/leads?';
+  if (status) url += 'status=' + encodeURIComponent(status) + '&';
+  if (search) url += 'search=' + encodeURIComponent(search) + '&';
+  if (startDate) url += 'startDate=' + encodeURIComponent(startDate) + '&';
+  if (endDate) url += 'endDate=' + encodeURIComponent(endDate) + '&';
+
+  fetch(url, { headers: getAuthHeaders() })
+    .then(r => r.json())
+    .then(data => {
+      leadsData = data;
+      currentPage = 1;
+      renderTable();
+    })
+    .catch(() => showToast('Erro ao carregar leads', 'error'));
+}
+
+let debounceTimer;
+function debouncedLoad() {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(loadLeads, 300);
+}
+
+function sortBy(field) {
+  if (sortField === field) sortDir *= -1;
+  else { sortField = field; sortDir = 1; }
+  renderTable();
+}
+
+function renderTable() {
+  const sorted = [...leadsData].sort((a, b) => {
+    let va = a[sortField] || '', vb = b[sortField] || '';
+    if (sortField === 'id' || sortField === 'percentage') return (va - vb) * sortDir;
+    return String(va).localeCompare(String(vb)) * sortDir;
+  });
+
+  const totalPages = Math.ceil(sorted.length / PER_PAGE) || 1;
+  if (currentPage > totalPages) currentPage = totalPages;
+  const start = (currentPage - 1) * PER_PAGE;
+  const pageData = sorted.slice(start, start + PER_PAGE);
+
+  const tbody = document.getElementById('leadsTable');
+  
+  if (pageData.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state">Nenhum cadastro encontrado</div></td></tr>';
+    document.getElementById('pagination').innerHTML = '';
+    return;
+  }
+
+  tbody.innerHTML = pageData.map(l => `
+    <tr>
+      <td style="color:var(--text-muted)">${l.id}</td>
+      <td><strong>${esc(l.nomeP1)}</strong><br><span style="color:var(--text-muted);font-size:0.75rem">${l.dataP1}</span></td>
+      <td><strong>${esc(l.nomeP2)}</strong><br><span style="color:var(--text-muted);font-size:0.75rem">${l.dataP2}</span></td>
+      <td>${esc(l.email)}</td>
+      <td>${esc(l.whatsapp)}</td>
+      <td><span class="badge badge-${l.status}">${l.status === 'pago' ? 'Pago' : 'Pendente'}</span></td>
+      <td>${l.percentage || '-'}${l.percentage ? '%' : ''}</td>
+      <td style="font-size:0.8rem;color:var(--text-muted)">${formatDate(l.createdAt)}</td>
+      <td>
+        <div class="actions">
+          <button onclick="viewLead(${l.id})" title="Ver detalhes">👁️</button>
+          <button onclick="deleteLead(${l.id})" title="Excluir" style="color:var(--red)">🗑️</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+
+  const pagination = document.getElementById('pagination');
+  pagination.innerHTML = `
+    <span class="info">${sorted.length} registro(s) — Página ${currentPage} de ${totalPages}</span>
+    <div class="btns">
+      <button class="btn btn-secondary btn-sm" onclick="goPage(${currentPage - 1})" ${currentPage <= 1 ? 'disabled style="opacity:0.4"' : ''}>Anterior</button>
+      <button class="btn btn-secondary btn-sm" onclick="goPage(${currentPage + 1})" ${currentPage >= totalPages ? 'disabled style="opacity:0.4"' : ''}>Próxima</button>
+    </div>
+  `;
+}
+
+function goPage(p) {
+  currentPage = p;
+  renderTable();
+}
+
+function viewLead(id) {
+  fetch(API + '/api/leads/' + id, { headers: getAuthHeaders() })
+    .then(r => r.json())
+    .then(l => {
+      document.getElementById('detailContent').innerHTML = `
+        <h2>Detalhes do Cadastro #${l.id}</h2>
+        <div class="field"><div class="label">Pessoa 1</div><div class="value">${esc(l.nomeP1)} (${l.dataP1})</div></div>
+        <div class="field"><div class="label">Pessoa 2</div><div class="value">${esc(l.nomeP2)} (${l.dataP2})</div></div>
+        <div class="field"><div class="label">Email</div><div class="value">${esc(l.email)}</div></div>
+        <div class="field"><div class="label">WhatsApp</div><div class="value">${esc(l.whatsapp)}</div></div>
+        <div class="field"><div class="label">Status</div><div class="value"><span class="badge badge-${l.status}">${l.status === 'pago' ? 'Pago' : 'Pendente'}</span></div></div>
+        <div class="field"><div class="label">Percentual de Compatibilidade</div><div class="value">${l.percentage || '—'}${l.percentage ? '%' : ''}</div></div>
+        <div class="field"><div class="label">Asaas ID</div><div class="value" style="font-size:0.8rem;word-break:break-all">${l.asaas_id || '—'}</div></div>
+        <div class="field"><div class="label">Criado em</div><div class="value">${formatDate(l.createdAt)}</div></div>
+        <div class="field"><div class="label">Atualizado em</div><div class="value">${formatDate(l.updatedAt)}</div></div>
+        <div class="field"><div class="label">Termos LGPD</div><div class="value">${l.acceptedTerms ? '✅ Aceito' : '❌ Não aceito'}</div></div>
+        <button class="modal-close" onclick="closeModal()">Fechar</button>
+      `;
+      document.getElementById('detailModal').classList.add('active');
+    })
+    .catch(() => showToast('Erro ao carregar detalhes', 'error'));
+}
+
+function closeModal() {
+  document.getElementById('detailModal').classList.remove('active');
+}
+document.getElementById('detailModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+function deleteLead(id) {
+  if (!confirm('Tem certeza que deseja excluir este cadastro?')) return;
+  fetch(API + '/api/leads/' + id, { method: 'DELETE', headers: getAuthHeaders() })
+    .then(r => {
+      if (!r.ok) throw new Error();
+      showToast('Cadastro excluído com sucesso', 'success');
+      loadAll();
+    })
+    .catch(() => showToast('Erro ao excluir cadastro', 'error'));
+}
+
+function exportCSV() {
+  window.open(API + '/api/leads/export', '_blank');
+}
+
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = s || '';
+  return d.innerHTML;
+}
+
+function formatDate(d) {
+  if (!d) return '—';
+  return new Date(d + 'Z').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + (type || '');
+  clearTimeout(t._hide);
+  t._hide = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    const login = document.getElementById('loginScreen');
+    if (login.style.display !== 'none') doLogin();
+  }
+});
+</script>
+</body>
+</html>

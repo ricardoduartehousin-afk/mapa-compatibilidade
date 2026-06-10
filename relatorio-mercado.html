@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatório de Mercado — Mapa de Compatibilidade</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #0f0f1a;
+    color: #e2e8f0;
+    line-height: 1.6;
+    padding: 0;
+  }
+
+  .report {
+    max-width: 800px;
+    margin: 0 auto;
+    background: #0f0f1a;
+  }
+
+  .cover {
+    background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1a 50%, #1a1a2e 100%);
+    border-bottom: 1px solid #2d2d4a;
+    padding: 5rem 3rem 4rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 50% 50%, rgba(249,115,22,0.05) 0%, transparent 50%);
+    animation: pulse 4s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  .cover .tag {
+    display: inline-block;
+    background: rgba(249,115,22,0.15);
+    color: #f97316;
+    padding: 0.4rem 1rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+
+  .cover h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #f97316, #fb923c);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.75rem;
+    position: relative;
+  }
+
+  .cover h2 {
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: #94a3b8;
+    margin-bottom: 2rem;
+    position: relative;
+  }
+
+  .cover .meta {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    font-size: 0.8rem;
+    color: #64748b;
+    position: relative;
+  }
+
+  .cover .meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .cover .brand {
+    margin-top: 2rem;
+    font-size: 0.85rem;
+    color: #f97316;
+    font-weight: 600;
+    position: relative;
+  }
+
+  .section {
+    padding: 2.5rem 3rem;
+    border-bottom: 1px solid #1e1e35;
+  }
+
+  .section:last-child {
+    border-bottom: none;
+  }
+
+  .section h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #f97316;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .section h3 .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: rgba(249,115,22,0.15);
+    border-radius: 50%;
+    font-size: 0.8rem;
+    color: #f97316;
+  }
+
+  .section h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    margin: 1.25rem 0 0.5rem;
+  }
+
+  .section p {
+    color: #cbd5e1;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .highlight-box {
+    background: linear-gradient(135deg, rgba(249,115,22,0.08), rgba(59,130,246,0.08));
+    border: 1px solid rgba(249,115,22,0.15);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    margin: 1.25rem 0;
+  }
+
+  .highlight-box p {
+    color: #e2e8f0;
+    margin-bottom: 0;
+    font-size: 0.9rem;
+  }
+
+  .highlight-box .big-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #f97316;
+    line-height: 1;
+  }
+
+  .highlight-box .big-number span {
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: #94a3b8;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.85rem;
+  }
+
+  th {
+    background: #1a1a2e;
+    text-align: left;
+    padding: 0.65rem 0.85rem;
+    font-weight: 600;
+    color: #94a3b8;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #2d2d4a;
+  }
+
+  td {
+    padding: 0.65rem 0.85rem;
+    border-bottom: 1px solid #1e1e35;
+    color: #cbd5e1;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  .badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+
+  .badge-green { background: rgba(16,185,129,0.15); color: #10b981; }
+  .badge-yellow { background: rgba(245,158,11,0.15); color: #f59e0b; }
+  .badge-orange { background: rgba(249,115,22,0.15); color: #f97316; }
+
+  .scenario-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin: 1.25rem 0;
+  }
+
+  .scenario-card {
+    background: #1a1a2e;
+    border: 1px solid #2d2d4a;
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    text-align: center;
+  }
+
+  .scenario-card .label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #94a3b8;
+    margin-bottom: 0.5rem;
+  }
+
+  .scenario-card .value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #f97316;
+  }
+
+  .scenario-card .sub {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-top: 0.25rem;
+  }
+
+  .scenario-card.conservador .value { color: #f59e0b; }
+  .scenario-card.moderado .value { color: #f97316; }
+  .scenario-card.otimista .value { color: #10b981; }
+
+  ul, ol {
+    color: #cbd5e1;
+    font-size: 0.9rem;
+    margin: 0.5rem 0 0.75rem 1.25rem;
+  }
+
+  li { margin-bottom: 0.35rem; }
+
+  .footer-note {
+    background: #1a1a2e;
+    padding: 2rem 3rem;
+    text-align: center;
+    border-top: 1px solid #2d2d4a;
+  }
+
+  .footer-note p {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-bottom: 0.25rem;
+  }
+
+  .footer-note .brand {
+    color: #f97316;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  @media print {
+    body { background: #fff; color: #1a1a2e; }
+    .report { max-width: 100%; }
+    .cover { background: linear-gradient(135deg, #f8fafc, #fff); border-bottom: 2px solid #f97316; }
+    .cover h1 { -webkit-text-fill-color: #f97316; color: #f97316; }
+    .cover h2 { color: #64748b; }
+    .cover .meta span { color: #94a3b8; }
+    .section { border-bottom-color: #e2e8f0; }
+    .section h3 { color: #f97316; }
+    .section h4 { color: #1a1a2e; }
+    .section p, ul, ol { color: #475569; }
+    .highlight-box { background: #f8fafc; border-color: #f97316; }
+    .highlight-box p { color: #1a1a2e; }
+    table th { background: #f1f5f9; color: #64748b; }
+    table td { color: #475569; border-bottom-color: #e2e8f0; }
+    .scenario-card { background: #f8fafc; border-color: #e2e8f0; }
+    .scenario-card .label { color: #64748b; }
+    .scenario-card .sub { color: #94a3b8; }
+    .footer-note { background: #f8fafc; border-top-color: #e2e8f0; }
+    .footer-note p { color: #94a3b8; }
+    .badge-green { background: #d1fae5; color: #059669; }
+    .badge-yellow { background: #fef3c7; color: #d97706; }
+    .badge-orange { background: #ffedd5; color: #ea580c; }
+  }
+
+  @media (max-width: 600px) {
+    .cover { padding: 3rem 1.5rem 2rem; }
+    .cover h1 { font-size: 1.75rem; }
+    .section { padding: 1.5rem; }
+    .scenario-grid { grid-template-columns: 1fr; }
+    .cover .meta { flex-direction: column; gap: 0.5rem; }
+  }
+</style>
+</head>
+<body>
+<div class="report">
+
+  <!-- CAPA -->
+  <div class="cover">
+    <div class="tag">Estudo de Mercado 2026</div>
+    <h1>Mapa de Compatibilidade</h1>
+    <h2>Análise de Mercado &amp; Projeção de Ganhos<br>Numerologia de Casal — Mercado Digital Brasileiro</h2>
+    <div class="meta">
+      <span>📅 Junho 2026</span>
+      <span>📄 Versão 1.0</span>
+      <span>🔒 Confidencial</span>
+    </div>
+    <div class="brand">Jornada Interior</div>
+  </div>
+
+  <!-- SUMÁRIO EXECUTIVO -->
+  <div class="section">
+    <h3><span class="num">1</span> Sumário Executivo</h3>
+    <p>Este relatório analisa o mercado brasileiro de produtos digitais de autoconhecimento e espiritualidade, com foco em numerologia de casal. O objetivo é dimensionar o potencial de receita do <strong>Mapa de Compatibilidade</strong>, um produto digital automatizado que entrega análises numerológicas de compatibilidade entre casais por R$ 19,90.</p>
+
+    <div class="highlight-box">
+      <div class="big-number">R$ 30+ bi <span>/ ano</span></div>
+      <p>Tamanho do mercado de espiritualidade e autoconhecimento no Brasil, com crescimento acelerado impulsionado pela digitalização e busca por bem-estar.</p>
+    </div>
+
+    <p><strong>Conclusão principal:</strong> O produto tem potencial de faturamento entre <strong>R$ 600 e R$ 12.000 mensais</strong>, dependendo do investimento em tráfego e da estratégia de aquisição de clientes. Com custo operacional próximo de zero, a margem líquida é de aproximadamente <strong>95%</strong>.</p>
+  </div>
+
+  <!-- PANORAMA DO MERCADO -->
+  <div class="section">
+    <h3><span class="num">2</span> Panorama do Mercado</h3>
+
+    <h4>2.1 Mercado de Autoconhecimento e Espiritualidade</h4>
+    <p>O setor de espiritualidade e autoconhecimento vive um momento de forte expansão no Brasil. Impulsionado por redes sociais, pandemia (que acelerou a busca por sentido) e uma crescente conscientização sobre saúde mental, o mercado movimenta cifras bilionárias.</p>
+
+    <table>
+      <tr><th>Indicador</th><th>Valor</th><th>Fonte</th></tr>
+      <tr><td>Mercado de espiritualidade no Brasil</td><td><strong>R$ 30+ bilhões/ano</strong></td><td>ESPM / Jornal de Brasília</td></tr>
+      <tr><td>Economia da fé global</td><td><strong>US$ 1+ trilhão/ano</strong></td><td>Forbes / ESPM</td></tr>
+      <tr><td>Mercado global de produtos espirituais</td><td><strong>US$ 20,77 bi (2026)</strong></td><td>Business Research Insights</td></tr>
+      <tr><td>Crescimento anual do setor</td><td><strong>4,5% CAGR (global)</strong></td><td>Business Research Insights</td></tr>
+      <tr><td>Crescimento do setor no Brasil</td><td><strong>20%+ ao ano</strong></td><td>Mercado Livre / Nubimetrics</td></tr>
+      <tr><td>Católicos no Brasil (2022)</td><td>56,7% (em queda)</td><td>IBGE Censo 2022</td></tr>
+      <tr><td>Evangélicos no Brasil (2022)</td><td>26,9% (em alta)</td><td>IBGE Censo 2022</td></tr>
+    </table>
+
+    <h4>2.2 Digitalização do Setor</h4>
+    <p>O mercado esotérico e de autoconhecimento migrou fortemente para o digital. Profissionais que antes atendiam presencialmente agora oferecem consultas online, cursos e produtos digitais. As redes sociais (especialmente TikTok e Instagram) democratizaram o acesso e criaram uma nova geração de consumidores.</p>
+    <p>O <strong>Personare</strong>, maior portal de autoconhecimento do Brasil, gera mais de <strong>1,4 milhão de mapas personalizados por mês</strong>, demonstrando a imensa demanda por esse tipo de produto.</p>
+
+    <div class="highlight-box">
+      <p><strong>🔍 Insight:</strong> O Mapa de Compatibilidade se encaixa perfeitamente nessa tendência — é 100% digital, automatizado, escalável e atende à crescente demanda por ferramentas de autoconhecimento para casais.</p>
+    </div>
+  </div>
+
+  <!-- CONCORRÊNCIA -->
+  <div class="section">
+    <h3><span class="num">3</span> Análise da Concorrência</h3>
+
+    <table>
+      <tr><th>Concorrente</th><th>Produto</th><th>Preço</th><th>Formato</th><th>Diferencial</th></tr>
+      <tr>
+        <td><strong>Personare</strong></td>
+        <td>Mapa do Amor / Sinastria</td>
+        <td>R$ 39 - 79</td>
+        <td>Online (site)</td>
+        <td>Marca consolidada, tráfego massivo</td>
+      </tr>
+      <tr>
+        <td><strong>Consultas individuais</strong></td>
+        <td>Consulta com numerólogo</td>
+        <td>R$ 300 - 400</td>
+        <td>Presencial / Vídeo</td>
+        <td>Atendimento personalizado</td>
+      </tr>
+      <tr>
+        <td><strong>Aplicativos</strong></td>
+        <td>Apps de numerologia</td>
+        <td>Grátis - R$ 30</td>
+        <td>Mobile</td>
+        <td>Conveniência mobile</td>
+      </tr>
+      <tr>
+        <td style="background:rgba(249,115,22,0.08);"><strong>Mapa de Compatibilidade</strong></td>
+        <td style="background:rgba(249,115,22,0.08);">Relatório numerológico de casal</td>
+        <td style="background:rgba(249,115,22,0.08);"><strong>R$ 19,90</strong></td>
+        <td style="background:rgba(249,115,22,0.08);">Web + PDF</td>
+        <td style="background:rgba(249,115,22,0.08);">Preço acessível, entrega instantânea, sem agendamento</td>
+      </tr>
+    </table>
+
+    <h4>Vantagens Competitivas</h4>
+    <ul>
+      <li><strong>Preço disruptivo:</strong> 95% mais barato que consulta presencial</li>
+      <li><strong>Zero dependência de agenda:</strong> o cliente recebe na hora</li>
+      <li><strong>Margem quase total:</strong> custo operacional próximo de zero</li>
+      <li><strong>Alta recorrentabilidade:</strong> novos casais surgem todos os dias (namorados, noivos, casados)</li>
+      <li><strong>Potencial de viralização:</strong> casais adoram compartilhar resultados compatíveis</li>
+    </ul>
+
+    <h4>Fraquezas a Monitorar</h4>
+    <ul>
+      <li>Marca nova (sem autoridade inicial)</li>
+      <li>Concorrentes gratuitos (apps básicos)</li>
+      <li>Dependência de tráfego pago no início</li>
+    </ul>
+  </div>
+
+  <!-- PÚBLICO-ALVO -->
+  <div class="section">
+    <h3><span class="num">4</span> Público-Alvo</h3>
+
+    <table>
+      <tr><th>Segmento</th><th>Perfil</th><th>Potencial</th></tr>
+      <tr>
+        <td><strong>Namorados</strong></td>
+        <td>18-30 anos, início/meio do relacionamento, curiosos sobre compatibilidade</td>
+        <td><span class="badge badge-orange">Alto</span></td>
+      </tr>
+      <tr>
+        <td><strong>Noivos</strong></td>
+        <td>25-35 anos, planejando casamento, buscam confirmação da escolha</td>
+        <td><span class="badge badge-green">Altíssimo</span></td>
+      </tr>
+      <tr>
+        <td><strong>Casados com desafios</strong></td>
+        <td>30-50 anos, enfrentando dificuldades, buscam orientação</td>
+        <td><span class="badge badge-green">Altíssimo</span></td>
+      </tr>
+      <tr>
+        <td><strong>Casais em crise</strong></td>
+        <td>30-45 anos, buscando respostas sobre o futuro da relação</td>
+        <td><span class="badge badge-orange">Alto</span></td>
+      </tr>
+      <tr>
+        <td><strong>Público esotérico</strong></td>
+        <td>25-50 anos, já consome conteúdos de astrologia, tarô, numerologia</td>
+        <td><span class="badge badge-green">Altíssimo</span></td>
+      </tr>
+    </table>
+
+    <p><strong>Comportamento de compra:</strong> 73% dos brasileiros entre 18-40 anos consomem conteúdos de astrologia/numerologia (Fonte: Personare). O ticket médio para produtos digitais de autoconhecimento gira em torno de R$ 25-50, validando o preço de R$ 19,90 como ponto de entrada atrativo.</p>
+  </div>
+
+  <!-- PROJEÇÃO DE GANHOS -->
+  <div class="section">
+    <h3><span class="num">5</span> Projeção de Ganhos</h3>
+
+    <p>Três cenários foram projetados com base em métricas reais de mercado (conversão, tráfego e ticket médio).</p>
+
+    <div class="scenario-grid">
+      <div class="scenario-card conservador">
+        <div class="label"><span class="badge badge-yellow">Início</span></div>
+        <div class="value">R$ 597</div>
+        <div class="sub">/ mês</div>
+        <div style="margin-top:0.75rem;font-size:0.75rem;color:#94a3b8;">
+          1.000 visitas<br>
+          15% conversão → 150 leads<br>
+          20% pagamento → 30 vendas
+        </div>
+      </div>
+      <div class="scenario-card moderado">
+        <div class="label"><span class="badge badge-orange">3-6 meses</span></div>
+        <div class="value">R$ 2.985</div>
+        <div class="sub">/ mês</div>
+        <div style="margin-top:0.75rem;font-size:0.75rem;color:#94a3b8;">
+          5.000 visitas<br>
+          12% conversão → 600 leads<br>
+          25% pagamento → 150 vendas
+        </div>
+      </div>
+      <div class="scenario-card otimista">
+        <div class="label"><span class="badge badge-green">6-12 meses</span></div>
+        <div class="value">R$ 11.940</div>
+        <div class="sub">/ mês</div>
+        <div style="margin-top:0.75rem;font-size:0.75rem;color:#94a3b8;">
+          20.000 visitas<br>
+          10% conversão → 2.000 leads<br>
+          30% pagamento → 600 vendas
+        </div>
+      </div>
+    </div>
+
+    <h4>Premissas Utilizadas</h4>
+    <table>
+      <tr><th>Variável</th><th>Conservador</th><th>Moderado</th><th>Otimista</th></tr>
+      <tr><td>Visitantes/mês</td><td>1.000</td><td>5.000</td><td>20.000</td></tr>
+      <tr><td>Taxa de conversão (lead)</td><td>15%</td><td>12%</td><td>10%</td></tr>
+      <tr><td>Taxa de pagamento</td><td>20%</td><td>25%</td><td>30%</td></tr>
+      <tr><td>Ticket médio</td><td>R$ 19,90</td><td>R$ 19,90</td><td>R$ 19,90</td></tr>
+      <tr><td><strong>Faturamento mensal</strong></td><td><strong>R$ 597</strong></td><td><strong>R$ 2.985</strong></td><td><strong>R$ 11.940</strong></td></tr>
+      <tr><td>Custo operacional</td><td>~R$ 30</td><td>~R$ 30</td><td>~R$ 80</td></tr>
+      <tr><td><strong>Lucro líquido</strong></td><td><strong>R$ 567</strong></td><td><strong>R$ 2.955</strong></td><td><strong>R$ 11.860</strong></td></tr>
+    </table>
+
+    <h4>Custos Operacionais</h4>
+    <table>
+      <tr><th>Item</th><th>Custo</th><th>Observação</th></tr>
+      <tr><td>Vercel (frontend)</td><td>Grátis</td><td>Plano Free (até 100 GB largura)</td></tr>
+      <tr><td>Render (backend)</td><td>Grátis</td><td>Plano Free (até 750h/mês)</td></tr>
+      <tr><td>Domínio .com.br</td><td>~R$ 5/mês</td><td>R$ 40-60/ano</td></tr>
+      <tr><td>Asaas (taxa Pix)</td><td>~R$ 0,49/venda</td><td>0,99% + R$ 0,25</td></tr>
+      <tr><td>Google Ads / Meta Ads</td><td>Variável</td><td>Investimento opcional para acelerar</td></tr>
+    </table>
+  </div>
+
+  <!-- ESTRATÉGIAS DE CRESCIMENTO -->
+  <div class="section">
+    <h3><span class="num">6</span> Estratégias de Crescimento</h3>
+
+    <h4>6.1 Tráfego Orgânico (custo zero)</h4>
+    <ul>
+      <li><strong>TikTok:</strong> vídeos curtos com "a compatibilidade de [casal famoso] é X%" — potencial viral alto</li>
+      <li><strong>Instagram Reels:</strong> mescla de entretenimento + numerologia</li>
+      <li><strong>Pinterest:</strong> pins com resultados numerológicos</li>
+      <li><strong>YouTube Shorts:</strong> "3 números que revelam se o relacionamento vai dar certo"</li>
+      <li><strong>SEO:</strong> artigos sobre "numerologia de casal", "compatibilidade amorosa", "mapa numerológico do amor"</li>
+    </ul>
+
+    <h4>6.2 Tráfego Pago (investimento recomendado)</h4>
+    <ul>
+      <li><strong>Google Ads:</strong> palavras-chave como "numerologia de casal", "compatibilidade amorosa", "mapa do amor"</li>
+      <li><strong>Meta Ads (Facebook/Instagram):</strong> segmentação por "relacionamento sério", "noivo(a)", "casado(a)"</li>
+      <li><strong>Custo por clique estimado:</strong> R$ 0,50 - R$ 2,00</li>
+      <li><strong>ROI estimado:</strong> cada R$ 1 investido em tráfego pode retornar R$ 3-5 em vendas</li>
+    </ul>
+
+    <h4>6.3 Estratégias de Conversão</h4>
+    <ul>
+      <li><strong>Gatilho de escassez:</strong> timer de 10 minutos no Pix</li>
+      <li><strong>Prova social:</strong> depoimentos de casais que fizeram o mapa</li>
+      <li><strong>Urgência:</strong> "preço promocional por tempo limitado"</li>
+      <li><strong>Cross-sell:</strong> relatório completo + PDF para download</li>
+    </ul>
+
+    <h4>6.4 Potencial de Recorrência</h4>
+    <p>Diferente de muitos produtos digitais, a numerologia de casal tem um <strong>potencial de recorrência natural</strong>:</p>
+    <ul>
+      <li><strong>Casais novos:</strong> todos os dias novos relacionamentos começam</li>
+      <li><strong>Presente:</strong> pode ser comprado como presente para amigos casais</li>
+      <li><strong>Revisão anual:</strong> "como sua compatibilidade evoluiu?" (nova versão 2027)</li>
+      <li><strong>Indicação:</strong> "compartilhe com outro casal" → viralização orgânica</li>
+    </ul>
+  </div>
+
+  <!-- ANÁLISE DE RISCOS -->
+  <div class="section">
+    <h3><span class="num">7</span> Análise de Riscos</h3>
+
+    <table>
+      <tr><th>Risco</th><th>Probabilidade</th><th>Impacto</th><th>Mitigação</th></tr>
+      <tr>
+        <td>Conta Asaas não aprovada</td>
+        <td><span class="badge badge-yellow">Média</span></td>
+        <td><span class="badge badge-orange">Médio</span></td>
+        <td>Mock funciona perfeitamente até aprovação</td>
+      </tr>
+      <tr>
+        <td>Concorrentes copiarem</td>
+        <td><span class="badge badge-green">Alta</span></td>
+        <td><span class="badge badge-yellow">Baixo</span></td>
+        <td>Primeiro a se mover, marca, conteúdo exclusivo</td>
+      </tr>
+      <tr>
+        <td>Baixa conversão inicial</td>
+        <td><span class="badge badge-yellow">Média</span></td>
+        <td><span class="badge badge-yellow">Baixo</span></td>
+        <td>A/B testing, ajuste de preço, gatilhos</td>
+      </tr>
+      <tr>
+        <td>Custos de hospedagem</td>
+        <td><span class="badge badge-green">Muito Baixa</span></td>
+        <td><span class="badge badge-yellow">Baixo</span></td>
+        <td>Vercel + Render grátis por tempo indeterminado</td>
+      </tr>
+      <tr>
+        <td>Mudança na API Asaas</td>
+        <td><span class="badge badge-yellow">Baixa</span></td>
+        <td><span class="badge badge-yellow">Médio</span></td>
+        <td>Código modular, fácil de adaptar</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- RECOMENDAÇÕES FINAIS -->
+  <div class="section">
+    <h3><span class="num">8</span> Recomendações Finais</h3>
+
+    <div class="highlight-box">
+      <p><strong>✅ O negócio é viável.</strong> Com investimento inicial próximo de zero (apenas domínio), o Mapa de Compatibilidade pode gerar renda relevante em poucos meses. O mercado é grande, crescente e carente de produtos digitais de qualidade a preços acessíveis.</p>
+    </div>
+
+    <h4>Prioridades Imediatas</h4>
+    <ol>
+      <li><strong>Aguardar aprovação do Asaas</strong> — fundamental para Pix real</li>
+      <li><strong>Comprar domínio</strong> (ex: mapadecompatibilidade.com.br)</li>
+      <li><strong>Fazer deploy:</strong> frontend no Vercel, backend no Render</li>
+      <li><strong>Criar conteúdo orgânico</strong> no TikTok/Instagram para atrair primeiros clientes</li>
+      <li><strong>A partir de R$ 500/mês de faturamento:</strong> reinvestir em tráfego pago</li>
+    </ol>
+
+    <h4>Visão de Longo Prazo</h4>
+    <ul>
+      <li><strong>Mês 1-3:</strong> validar produto com tráfego orgânico (~R$ 500/mês)</li>
+      <li><strong>Mês 3-6:</strong> escalar com tráfego pago (~R$ 3.000/mês)</li>
+      <li><strong>Mês 6-12:</strong> consolidar e expandir (~R$ 12.000/mês)</li>
+      <li><strong>Ano 2:</strong> lançar versões premium (relatório completo + consultoria), criar novo produto (numerologia individual, tarot, etc.)</li>
+    </ul>
+  </div>
+
+  <!-- RODAPÉ -->
+  <div class="footer-note">
+    <p class="brand">Jornada Interior — Mapa de Compatibilidade</p>
+    <p>Este relatório foi elaborado com base em dados públicos de mercado, pesquisas setoriais e projeções próprias.</p>
+    <p>Os resultados podem variar com base em estratégia, execução e condições de mercado.</p>
+    <p style="margin-top:0.5rem;font-size:0.7rem;">Documento gerado em Junho de 2026 • Todos os direitos reservados</p>
+  </div>
+
+</div>
+<script>
+window.print();
+</script>
+</body>
+</html>
