@@ -130,6 +130,16 @@ async function gerarPixAsaas(paymentId) {
   return { success: true, data: await response.json() };
 }
 
+router.get('/meuip', async (req, res) => {
+  try {
+    const ipResp = await fetch('https://api.ipify.org?format=json');
+    const ipData = await ipResp.json();
+    res.json({ ip: ipData.ip });
+  } catch (e) {
+    res.json({ erro: e.message });
+  }
+});
+
 router.get('/diagnostico', async (req, res) => {
   const apiKey = process.env.ASAAS_API_KEY;
   const mode = process.env.ASAAS_MODE || 'sandbox';
