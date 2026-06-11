@@ -34,7 +34,7 @@ export default function App() {
         const lead = await response.json();
         setLeadId(lead.id);
         if (res?.percentage) {
-          await fetch(`${API}/api/leads/${lead.id}`, {
+          await fetch(`${API}/api/leads/${lead.id}/percentage`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ percentage: res.percentage })

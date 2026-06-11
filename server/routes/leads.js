@@ -26,6 +26,20 @@ router.post('/', (req, res) => {
   res.status(201).json({ id: result.lastInsertRowid, status: 'pendente', existing: false });
 });
 
+router.patch('/:id/percentage', (req, res) => {
+  const { percentage } = req.body;
+
+  const lead = queryOne('SELECT id FROM leads WHERE id = ?', [req.params.id]);
+  if (!lead) {
+    return res.status(404).json({ error: 'Lead não encontrado' });
+  }
+
+  execute('UPDATE leads SET percentage = ?, updatedAt = datetime("now", "-3 hours") WHERE id = ?',
+    [percentage, req.params.id]);
+
+  res.json({ message: 'Percentual atualizado' });
+});
+
 router.get('/', adminAuth, (req, res) => {
   const { status, search, startDate, endDate } = req.query;
   let sql = 'SELECT * FROM leads WHERE 1=1';
