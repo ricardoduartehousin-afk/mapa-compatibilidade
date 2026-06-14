@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import ENV from '../config/env';
 
 const testData = {
@@ -9,12 +10,19 @@ const testData = {
   whatsapp: '(11) 99999-8888',
 };
 
-export default function DevFab({ onGenerateTest }) {
+export default function DevFab() {
+  const navigate = useNavigate();
+
   if (!ENV.devToolsEnabled) return null;
+
+  const handleClick = () => {
+    sessionStorage.setItem('dev_test_data', JSON.stringify(testData));
+    navigate('/');
+  };
 
   return (
     <button
-      onClick={() => onGenerateTest(testData)}
+      onClick={handleClick}
       style={{
         position: 'fixed',
         top: 36,

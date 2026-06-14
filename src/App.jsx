@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import MultiStepForm from './components/MultiStepForm';
 import CalculatingScreen from './components/CalculatingScreen';
@@ -26,6 +26,15 @@ function MainApp() {
   const [leadId, setLeadId] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    const stored = sessionStorage.getItem('dev_test_data');
+    if (stored) {
+      sessionStorage.removeItem('dev_test_data');
+      const data = JSON.parse(stored);
+      handleFormSubmit(data);
+    }
+  }, []);
 
   const handleFormSubmit = async (data) => {
     setFormData(data);
@@ -95,8 +104,6 @@ function MainApp() {
         <h1>Teste de <span>Afinidade</span></h1>
         <p>Análise de Compatibilidade do Casal</p>
       </header>
-
-      <DevFab onGenerateTest={handleFormSubmit} />
 
       {step === 'input' && (
         <MultiStepForm onSubmit={handleFormSubmit} />
@@ -169,6 +176,8 @@ export default function App() {
   return (
     <>
       {ENV.devToolsEnabled && <DevMenu />}
+
+      <DevFab />
 
       <Routes>
         <Route path="/dev" element={<DevLogin />} />
