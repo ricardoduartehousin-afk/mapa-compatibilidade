@@ -19,8 +19,7 @@ export default function DevFab() {
   if (!ENV.devToolsEnabled && !(isAdmin && isLoggedIn())) return null;
 
   const handleClick = () => {
-    sessionStorage.setItem('dev_test_data', JSON.stringify(testData));
-    navigate('/');
+    navigate('/dev/mapadecompatibilidade');
   };
 
   return (

@@ -179,7 +179,7 @@ export default function App() {
 
   return (
     <>
-      {(ENV.devToolsEnabled || isAdminRoute) && <DevMenu />}
+      {(ENV.devToolsEnabled || (isAdminRoute && isLoggedIn())) && <DevMenu />}
 
       <DevFab />
 
