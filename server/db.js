@@ -32,12 +32,28 @@ export async function initDb() {
       status TEXT DEFAULT 'pendente',
       percentage INTEGER,
       asaas_id TEXT,
+      email_sent INTEGER DEFAULT 0,
       createdAt TEXT DEFAULT (datetime('now', '-3 hours')),
       updatedAt TEXT DEFAULT (datetime('now', '-3 hours'))
     )
   `);
 
+  try {
+    db.run("SELECT email_sent FROM leads LIMIT 0");
+  } catch (_) {
+    try {
+      db.run("ALTER TABLE leads ADD COLUMN email_sent INTEGER DEFAULT 0");
+      saveDb();
+    } catch (_2) {}
+  }
+
   saveDb();
+
+  try {
+    db.run("ALTER TABLE leads ADD COLUMN email_sent INTEGER DEFAULT 0");
+    saveDb();
+  } catch (_) {}
+
   return db;
 }
 

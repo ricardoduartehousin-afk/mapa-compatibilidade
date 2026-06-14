@@ -20,6 +20,9 @@
 - `server/db.js` — Banco SQLite (sql.js, sem compilação nativa)
 - `server/routes/leads.js` — CRUD de leads + admin endpoints
 - `server/routes/pix.js` — Integração Asaas + geração de Pix
+- `server/numerology.js` — Cálculos numerológicos (port do frontend)
+- `server/reportHtml.js` — Gera HTML do relatório para email
+- `server/email.js` — Serviço de envio de email via SMTP
 - `admin/index.html` — Painel admin em `http://localhost:3001/admin`
 - Admin default: `admin` / `admin123` (configurável em server/.env)
 
@@ -28,7 +31,18 @@
 2. Paywall gera Pix (`POST /api/pix/gerar`) → exibe QR code + código
 3. Frontend polling a cada 3s (`GET /api/leads/:id/status`)
 4. Asaas webhook ou simulação muda status para "pago"
-5. Se backend estiver offline, fallback para localStorage + mock
+5. Quando status muda para "pago", email com relatório é enviado automaticamente
+6. Se backend estiver offline, fallback para localStorage + mock
+
+## Email de Resultado
+- Configurar SMTP no `.env`: `SMTP_HOST`, `SMTP_USER`, `SMTP_PASS`, `SMTP_PORT`, `SMTP_FROM`
+- O email é enviado automaticamente quando:
+  - Webhook do Asaas confirma pagamento
+  - Admin confirma pagamento manualmente no painel
+  - Endpoint `POST /api/leads/:id/send-result` é chamado
+- Admin pode reenviar email pelo botão 📧 no painel
+- Coluna `email_sent` evita envios duplicados
+- Se SMTP não estiver configurado, nenhum email é enviado (sem crash)
 
 ## Tom dos Textos
 - Resultados devem soar como terapeuta/psicólogo, não como misticismo
@@ -59,13 +73,17 @@
    - **Build Command:** `npm install`
    - **Start Command:** `node index.js`
    - **Plan:** Free
- 4. Adicionar variáveis de ambiente (Environment Variables):
+  4. Adicionar variáveis de ambiente (Environment Variables):
     - `ASAAS_API_KEY` = sua chave (começa com `$aact_...`, o `$` FAZ PARTE da chave)
     - `ASAAS_MODE` = sandbox (ou production)
     - `ADMIN_USER` = admin
     - `ADMIN_PASS` = admin123
     - `PIX_VALUE` = 19.90
     - `CORS_ORIGIN` = URL do frontend no Vercel
+    - `SMTP_HOST` = smtp.gmail.com (ou seu provedor)
+    - `SMTP_USER` = seuemail@gmail.com
+    - `SMTP_PASS` = senha do app
+    - `SMTP_FROM` = seuemail@gmail.com
 5. Após deploy, copiar URL do backend (ex: `https://seuapp.onrender.com`)
 6. No Vercel, adicionar `VITE_API_URL=https://seuapp.onrender.com`
 

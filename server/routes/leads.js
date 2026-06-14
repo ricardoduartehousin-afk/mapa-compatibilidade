@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { queryAll, queryOne, execute } from '../db.js';
 import { adminAuth } from '../middleware/auth.js';
+import { sendLeadReport } from '../email.js';
 
 const router = Router();
 
@@ -132,6 +133,21 @@ router.get('/:id/status', (req, res) => {
   res.json({ id: lead.id, status: lead.status });
 });
 
+router.post('/:id/send-result', async (req, res) => {
+  const lead = queryOne('SELECT * FROM leads WHERE id = ?', [req.params.id]);
+
+  if (!lead) {
+    return res.status(404).json({ error: 'Lead não encontrado' });
+  }
+
+  if (lead.status !== 'pago') {
+    return res.status(400).json({ error: 'Lead ainda não está pago' });
+  }
+
+  const result = await sendLeadReport(lead);
+  res.json(result);
+});
+
 router.delete('/:id', adminAuth, (req, res) => {
   const lead = queryOne('SELECT id FROM leads WHERE id = ?', [req.params.id]);
 
@@ -143,7 +159,7 @@ router.delete('/:id', adminAuth, (req, res) => {
   res.json({ message: 'Lead excluído com sucesso' });
 });
 
-router.patch('/:id', adminAuth, (req, res) => {
+router.patch('/:id', adminAuth, async (req, res) => {
   const { status, percentage, asaas_id } = req.body;
 
   const lead = queryOne('SELECT * FROM leads WHERE id = ?', [req.params.id]);
@@ -177,6 +193,11 @@ router.patch('/:id', adminAuth, (req, res) => {
   execute(`UPDATE leads SET ${updates.join(', ')} WHERE id = ?`, params);
 
   const updated = queryOne('SELECT * FROM leads WHERE id = ?', [req.params.id]);
+
+  if (status === 'pago' && !lead.email_sent) {
+    sendLeadReport(updated).catch(err => console.error('[EMAIL] Erro async no PATCH:', err.message));
+  }
+
   res.json(updated);
 });
 

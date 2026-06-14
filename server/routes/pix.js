@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { queryOne, execute } from '../db.js';
+import { sendLeadReport } from '../email.js';
 
 const router = Router();
 
@@ -256,20 +257,41 @@ router.post('/gerar', async (req, res) => {
 });
 
 router.post('/webhook', async (req, res) => {
-  const { payment, event } = req.body;
+  const body = req.body;
+  console.log('[WEBHOOK] Payload recebido:', JSON.stringify(body).slice(0, 1000));
+
+  const payment = body.payment;
+  const event = body.event;
 
   if (!payment || !payment.id) {
+    console.log('[WEBHOOK] Ignorado: sem payment.id no payload');
     return res.status(200).json({ received: true });
   }
 
-  const lead = queryOne('SELECT * FROM leads WHERE asaas_id = ?', [payment.id]);
-  if (!lead) {
-    return res.status(200).json({ received: true, note: 'Lead não encontrado para este asaas_id' });
-  }
+  try {
+    const lead = queryOne('SELECT * FROM leads WHERE asaas_id = ?', [payment.id]);
+    if (!lead) {
+      console.log(`[WEBHOOK] Lead não encontrado para asaas_id = ${payment.id}`);
+      return res.status(200).json({ received: true, note: 'Lead não encontrado' });
+    }
 
-  if (event === 'PAYMENT_RECEIVED' || payment.status === 'RECEIVED') {
-    execute('UPDATE leads SET status = "pago", updatedAt = datetime("now", "-3 hours") WHERE id = ?', [lead.id]);
-    console.log(`Lead #${lead.id} marcado como pago via webhook`);
+    const isPago = event === 'PAYMENT_RECEIVED'
+      || event === 'PAYMENT_CONFIRMED'
+      || payment.status === 'RECEIVED'
+      || payment.status === 'CONFIRMED';
+
+    if (isPago) {
+      execute('UPDATE leads SET status = "pago", updatedAt = datetime("now", "-3 hours") WHERE id = ?', [lead.id]);
+      console.log(`[WEBHOOK] Lead #${lead.id} marcado como pago (event=${event}, status=${payment.status})`);
+      if (!lead.email_sent) {
+        const updatedLead = queryOne('SELECT * FROM leads WHERE id = ?', [lead.id]);
+        sendLeadReport(updatedLead).catch(err => console.error('[WEBHOOK] Erro ao enviar email:', err.message));
+      }
+    } else {
+      console.log(`[WEBHOOK] Lead #${lead.id} ignorado: event=${event}, status=${payment.status}`);
+    }
+  } catch (err) {
+    console.error('[WEBHOOK] Erro ao processar:', err.message);
   }
 
   res.status(200).json({ received: true });
@@ -288,6 +310,11 @@ router.post('/simular-pagamento', (req, res) => {
   }
 
   execute('UPDATE leads SET status = "pago", updatedAt = datetime("now", "-3 hours") WHERE id = ?', [leadId]);
+
+  const updatedLead = queryOne('SELECT * FROM leads WHERE id = ?', [leadId]);
+  if (!lead.email_sent) {
+    sendLeadReport(updatedLead).catch(err => console.error('[SIMULAR] Erro ao enviar email:', err.message));
+  }
 
   res.json({ message: 'Pagamento simulado com sucesso', status: 'pago' });
 });
