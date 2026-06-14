@@ -215,15 +215,15 @@ router.post('/gerar', async (req, res) => {
       );
 
       if (cobranca.error) {
-        console.error('Erro ao gerar cobrança:', cobranca.error);
-        return res.status(500).json({ error: cobranca.error });
+        console.warn('[PIX] Asaas falhou ao gerar cobrança, usando modo mock:', cobranca.error);
+        throw new Error(cobranca.error);
       }
 
       const pixResult = await gerarPixAsaas(cobranca.data.id);
 
       if (pixResult.error) {
-        console.error('Erro ao gerar Pix:', pixResult.error);
-        return res.status(500).json({ error: pixResult.error });
+        console.warn('[PIX] Asaas falhou ao gerar QR Code, usando modo mock:', pixResult.error);
+        throw new Error(pixResult.error);
       }
 
       execute('UPDATE leads SET asaas_id = ?, updatedAt = datetime("now", "-3 hours") WHERE id = ?',
@@ -240,8 +240,7 @@ router.post('/gerar', async (req, res) => {
         valor
       });
     } catch (err) {
-      console.error('Erro Asaas:', err);
-      return res.status(500).json({ error: 'Erro ao gerar Pix: ' + (err.message || 'desconhecido') });
+      console.warn('[PIX] Asaas indisponível, caindo para mock:', err.message);
     }
   }
 
@@ -258,6 +257,14 @@ router.post('/gerar', async (req, res) => {
 
 router.post('/webhook', async (req, res) => {
   const body = req.body;
+
+  const token = req.headers['x-webhook-token'] || req.headers['access_token'];
+  const expectedToken = process.env.ASAAS_WEBHOOK_TOKEN;
+  if (expectedToken && token !== expectedToken) {
+    console.warn('[WEBHOOK] Token inválido, ignorando');
+    return res.status(401).json({ error: 'Token inválido' });
+  }
+
   console.log('[WEBHOOK] Payload recebido:', JSON.stringify(body).slice(0, 1000));
 
   const payment = body.payment;

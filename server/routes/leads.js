@@ -27,6 +27,25 @@ router.post('/', (req, res) => {
   res.status(201).json({ id: result.lastInsertRowid, status: 'pendente', existing: false });
 });
 
+router.post('/recuperar-resultado', async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ error: 'Email é obrigatório' });
+  }
+
+  const lead = queryOne('SELECT * FROM leads WHERE email = ?', [email]);
+  if (!lead) {
+    return res.status(404).json({ error: 'Nenhum lead encontrado com esse email' });
+  }
+
+  if (lead.status !== 'pago') {
+    return res.status(400).json({ error: 'Pagamento ainda não foi confirmado para este email' });
+  }
+
+  const result = await sendLeadReport(lead);
+  res.json(result);
+});
+
 router.patch('/:id/percentage', (req, res) => {
   const { percentage } = req.body;
 
@@ -123,11 +142,47 @@ router.get('/:id', adminAuth, (req, res) => {
   res.json(lead);
 });
 
-router.get('/:id/status', (req, res) => {
-  const lead = queryOne('SELECT id, status FROM leads WHERE id = ?', [req.params.id]);
+async function verificarPagamentoAsaas(asaasId) {
+  const apiKey = process.env.ASAAS_API_KEY;
+  if (!apiKey) return null;
+
+  const mode = process.env.ASAAS_MODE || 'sandbox';
+  const baseUrl = mode === 'production' ? 'https://api.asaas.com/v3' : 'https://api-sandbox.asaas.com/v3';
+
+  try {
+    const resp = await fetch(`${baseUrl}/payments/${asaasId}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'access_token': apiKey
+      }
+    });
+    if (!resp.ok) return null;
+    const data = await resp.json();
+    return data.status;
+  } catch {
+    return null;
+  }
+}
+
+router.get('/:id/status', async (req, res) => {
+  const lead = queryOne('SELECT * FROM leads WHERE id = ?', [req.params.id]);
 
   if (!lead) {
     return res.status(404).json({ error: 'Lead não encontrado' });
+  }
+
+  if (lead.status === 'pendente' && lead.asaas_id) {
+    const asaasStatus = await verificarPagamentoAsaas(lead.asaas_id);
+    if (asaasStatus === 'RECEIVED' || asaasStatus === 'CONFIRMED') {
+      execute('UPDATE leads SET status = "pago", updatedAt = datetime("now", "-3 hours") WHERE id = ?', [lead.id]);
+      console.log(`[STATUS] Lead #${lead.id} pago detectado via Asaas API (status=${asaasStatus})`);
+      const updatedLead = queryOne('SELECT * FROM leads WHERE id = ?', [lead.id]);
+      const { sendLeadReport } = await import('../email.js');
+      if (!lead.email_sent) {
+        sendLeadReport(updatedLead).catch(err => console.error('[STATUS] Erro ao enviar email:', err.message));
+      }
+      return res.json({ id: lead.id, status: 'pago' });
+    }
   }
 
   res.json({ id: lead.id, status: lead.status });

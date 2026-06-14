@@ -1,0 +1,176 @@
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes sumPulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(249, 115, 22, 0.3);
+    border-color: #f97316;
+  }
+  50% {
+    box-shadow: 0 0 35px rgba(249, 115, 22, 0.5);
+    border-color: #fb923c;
+  }
+}
+
+@keyframes heartPulse {
+  0%, 100% { transform: scale(1); }
+  15%      { transform: scale(1.2); }
+  30%      { transform: scale(0.95); }
+  45%      { transform: scale(1.1); }
+  60%      { transform: scale(1); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .glow-orb,
+  .v3-sum-circle {
+    animation: none !important;
+  }
+  .v3-section,
+  .v3-comp-list li {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .btn::after {
+    display: none !important;
+  }
+}
+
+/* V3 print overrides */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  .cosmic-container {
+    background: none !important;
+    padding: 0 !important;
+  }
+  .cosmic-container::before {
+    display: none !important;
+  }
+  .glow-orb {
+    display: none !important;
+  }
+  .glass-panel {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    backdrop-filter: none !important;
+  }
+  .report-actions, .simulation-banner {
+    display: none !important;
+  }
+  .report-block {
+    background: none !important;
+    border: 1px solid #ddd !important;
+    page-break-inside: avoid;
+  }
+  .report-block h3 {
+    color: #000 !important;
+  }
+  .report-block p {
+    color: #333 !important;
+  }
+  .stat-card {
+    border: 1px solid #ddd !important;
+  }
+  .stat-card-val {
+    color: #000 !important;
+  }
+  .v3-screen .couple-names-badge span {
+    color: #000 !important;
+  }
+  .v3-section-header h3 {
+    color: #000 !important;
+  }
+  .v3-person {
+    background: none !important;
+    border: 1px solid #ddd !important;
+  }
+  .v3-person-header h3 {
+    color: #000 !important;
+  }
+  .v3-number-text,
+  .v3-compare-text,
+  .v3-final-text,
+  .v3-how-to-box p,
+  .v3-insight {
+    color: #333 !important;
+  }
+  .v3-sum-circle {
+    border-color: #f97316 !important;
+  }
+  .v3-inc-item svg {
+    color: #ef4444 !important;
+  }
+  .v3-comp-pros {
+    border: 1px solid #10b981 !important;
+  }
+  .v3-comp-cons {
+    border: 1px solid #ef4444 !important;
+  }
+}

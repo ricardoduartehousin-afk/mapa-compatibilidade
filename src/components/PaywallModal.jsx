@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Lock, Clock, Copy, Check, AlertTriangle, RefreshCw } from 'lucide-react';
 
 const API = import.meta.env.VITE_API_URL || '';
@@ -47,9 +47,7 @@ export default function PaywallModal({ percentage, leadId, onPaymentSuccess }) {
       setTimeLeft(data.expiration || 600);
       setExpired(false);
 
-      if (data.asaasId) {
-        setPolling(true);
-      }
+      setPolling(true);
     } catch {
       setPixError(true);
     } finally {
@@ -78,17 +76,23 @@ export default function PaywallModal({ percentage, leadId, onPaymentSuccess }) {
     return () => clearInterval(interval);
   }, [polling, leadId, onPaymentSuccess]);
 
+  const timerRef = useRef(null);
+
   useEffect(() => {
-    if (timeLeft <= 0) {
-      setExpired(true);
-      setPolling(false);
-      return;
-    }
-    const timer = setInterval(() => {
-      setTimeLeft(prev => prev - 1);
+    if (expired) return;
+    timerRef.current = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current);
+          setExpired(true);
+          setPolling(false);
+          return 0;
+        }
+        return prev - 1;
+      });
     }, 1000);
-    return () => clearInterval(timer);
-  }, [timeLeft]);
+    return () => clearInterval(timerRef.current);
+  }, [expired]);
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);

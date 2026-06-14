@@ -8,23 +8,19 @@
 - `cd server && npm run dev` — Iniciar apenas o backend
 
 ## Estrutura
-- `src/components/` — Componentes React (MultiStepForm, PaywallModal, ResultsScreen, FullReport, etc.)
-- `src/utils/numerology.js` — Cálculos e relatórios completos (REPORTS)
+- `shared/numerology.js` — **Fonte única** dos cálculos numerológicos (usado tanto pelo frontend quanto pelo backend)
+- `src/components/` — Componentes React (MultiStepForm, PaywallModal, MapaResultado, etc.)
+- `src/utils/numerology.js` — Re-exporta de shared/ e mantém REPORTS (frontend-only)
 - `src/utils/numerologyMeanings.js` — Significados individuais dos números
-- `src/index.css` — Todos os estilos CSS
+- `src/utils/mapaDoCasalContent.js` — Conteúdo completo dos relatórios (perfis, compatibilidades)
+- `src/index.css` — Estilos CSS
 - `server/` — Backend Node.js + Express + SQLite (sql.js)
-- `admin/index.html` — Painel de controle de cadastros
-
-## Backend
-- `server/index.js` — Servidor Express (porta 3001)
-- `server/db.js` — Banco SQLite (sql.js, sem compilação nativa)
-- `server/routes/leads.js` — CRUD de leads + admin endpoints
-- `server/routes/pix.js` — Integração Asaas + geração de Pix
-- `server/numerology.js` — Cálculos numerológicos (port do frontend)
-- `server/reportHtml.js` — Gera HTML do relatório para email
-- `server/email.js` — Serviço de envio de email via SMTP
-- `admin/index.html` — Painel admin em `http://localhost:3001/admin`
-- Admin default: `admin` / `admin123` (configurável em server/.env)
+- `server/numerology.js` — Re-exporta de shared/
+- `admin/index.html` — Painel de controle de cadastros (Vanilla JS)
+- `src/admin/` — Admin React (DevLogin, DevDashboard, DevLeads)
+- `backup/result-generation/` — Backup do conteúdo de geração de resultados
+- `archive/V1/` e `archive/V2/` — Versões anteriores arquivadas
+- `memory/` — Memória do projeto (project-memory.md, lessons-learned.md)
 
 ## Fluxo de Pagamento
 1. Formulário envia lead → salva no backend (`POST /api/leads`)
