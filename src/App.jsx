@@ -61,10 +61,6 @@ function MainApp() {
   };
 
   const handleCalculatingComplete = () => {
-    if (!ENV.paywallEnabled) {
-      handlePaymentSuccess();
-      return;
-    }
     setStep('paywall');
   };
 
@@ -117,6 +113,17 @@ function MainApp() {
           <p style={{ color: '#64748b', fontSize: '0.75rem', textAlign: 'center', marginTop: '16px' }}>
             Pagamento 100% seguro • QR Code Pix • Pagamento processado por Asaas
           </p>
+          {ENV.devToolsEnabled && (
+            <div style={{ textAlign: 'center', marginTop: 8 }}>
+              <button
+                onClick={handlePaymentSuccess}
+                className="btn btn-secondary"
+                style={{ background: '#3b82f6', color: 'white', border: 'none' }}
+              >
+                🚀 Pular Pagamento (DEV)
+              </button>
+            </div>
+          )}
         </>
       )}
 
