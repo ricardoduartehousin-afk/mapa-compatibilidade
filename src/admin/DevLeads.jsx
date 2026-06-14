@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { fetchLeads, fetchLead, deleteLead } from './api';
+import { fetchLeads, fetchLead, deleteLead, updateLead } from './api';
+import { calculateCompatibility } from '../utils/numerology';
 
 function esc(s) {
   if (!s) return '';
@@ -74,6 +75,36 @@ export default function DevLeads() {
       loadLeads();
     } catch {
       showToast('Erro ao excluir', 'error');
+    }
+  };
+
+  const handleSendResult = async (lead) => {
+    const api = import.meta.env.VITE_API_URL || '';
+    const sending = 'Enviando...';
+    showToast(sending);
+
+    try {
+      if (lead.status !== 'pago') {
+        await updateLead(lead.id, { status: 'pago' });
+      }
+      const res = await fetch(`${api}/api/leads/${lead.id}/send-result`, {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Basic ' + localStorage.getItem('dev_token'),
+          'Content-Type': 'application/json'
+        }
+      });
+      const data = await res.json();
+      if (data.sent) {
+        showToast('Email enviado com sucesso!');
+      } else {
+        showToast('Erro: ' + (data.reason || 'falha ao enviar'), 'error');
+      }
+      loadLeads();
+      const updated = await fetchLead(lead.id);
+      setDetail(updated);
+    } catch {
+      showToast('Erro ao enviar email', 'error');
     }
   };
 
@@ -232,18 +263,21 @@ export default function DevLeads() {
         >
           <div style={{
             background: '#141729', border: '1px solid rgba(255,255,255,0.1)',
-            borderRadius: '16px', padding: '24px', maxWidth: '500px', width: '90%',
+            borderRadius: '16px', padding: '24px', maxWidth: '520px', width: '90%',
             maxHeight: '80vh', overflowY: 'auto'
           }}>
             <h3 style={{ color: '#fff', margin: '0 0 16px', fontSize: '1.1rem' }}>
               Detalhes do Cadastro #{detail.id}
             </h3>
+
+            {/* Dados do lead */}
             {[
               ['Pessoa 1', `${detail.nomeP1} (${detail.dataP1})`],
               ['Pessoa 2', `${detail.nomeP2} (${detail.dataP2})`],
               ['Email', detail.email],
               ['WhatsApp', detail.whatsapp],
               ['Status', detail.status === 'pago' ? '✅ Pago' : '⏳ Pendente'],
+              ['Email do Relatório', detail.email_sent ? '✅ Enviado' : '⏳ Pendente'],
               ['Compatibilidade', detail.percentage ? `${detail.percentage}%` : '—'],
               ['Asaas ID', detail.asaas_id || '—'],
               ['Criado em', formatDate(detail.createdAt)],
@@ -257,10 +291,59 @@ export default function DevLeads() {
                 <p style={{ color: '#cbd5e1', fontSize: '0.9rem', margin: 0 }}>{value}</p>
               </div>
             ))}
-            <button
-              onClick={() => setDetail(null)}
-              style={{ ...btnPrimary, width: '100%', marginTop: '8px' }}
-            >Fechar</button>
+
+            {/* Resultado numerológico calculado */}
+            {detail.nomeP1 && detail.dataP1 && detail.nomeP2 && detail.dataP2 && (() => {
+              const calc = calculateCompatibility(detail.nomeP1, detail.dataP1, detail.nomeP2, detail.dataP2);
+              return (
+                <div style={{
+                  marginTop: '16px', padding: '14px', borderRadius: '10px',
+                  background: 'rgba(249,115,22,0.06)', border: '1px solid rgba(249,115,22,0.15)'
+                }}>
+                  <p style={{ color: '#f97316', fontSize: '0.8rem', fontWeight: 700, marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    📊 Resultado do Mapa
+                  </p>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                    <div style={{ padding: '8px', background: 'rgba(59,130,246,0.1)', borderRadius: '6px' }}>
+                      <p style={{ color: '#94a3b8', fontSize: '0.65rem', textTransform: 'uppercase', margin: '0 0 2px' }}>Destino {esc(detail.nomeP1?.split(' ')[0])}</p>
+                      <p style={{ color: '#3b82f6', fontSize: '1.3rem', fontWeight: 700, margin: 0 }}>{calc.destinyP1}</p>
+                    </div>
+                    <div style={{ padding: '8px', background: 'rgba(139,92,246,0.1)', borderRadius: '6px' }}>
+                      <p style={{ color: '#94a3b8', fontSize: '0.65rem', textTransform: 'uppercase', margin: '0 0 2px' }}>Alma {esc(detail.nomeP1?.split(' ')[0])}</p>
+                      <p style={{ color: '#8b5cf6', fontSize: '1.3rem', fontWeight: 700, margin: 0 }}>{calc.soulNumberP1}</p>
+                    </div>
+                    <div style={{ padding: '8px', background: 'rgba(249,115,22,0.1)', borderRadius: '6px' }}>
+                      <p style={{ color: '#94a3b8', fontSize: '0.65rem', textTransform: 'uppercase', margin: '0 0 2px' }}>Destino {esc(detail.nomeP2?.split(' ')[0])}</p>
+                      <p style={{ color: '#f97316', fontSize: '1.3rem', fontWeight: 700, margin: 0 }}>{calc.destinyP2}</p>
+                    </div>
+                    <div style={{ padding: '8px', background: 'rgba(236,72,153,0.1)', borderRadius: '6px' }}>
+                      <p style={{ color: '#94a3b8', fontSize: '0.65rem', textTransform: 'uppercase', margin: '0 0 2px' }}>Alma {esc(detail.nomeP2?.split(' ')[0])}</p>
+                      <p style={{ color: '#ec4899', fontSize: '1.3rem', fontWeight: 700, margin: 0 }}>{calc.soulNumberP2}</p>
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'center', marginTop: '10px' }}>
+                    <span style={{
+                      display: 'inline-block', padding: '4px 16px', borderRadius: '999px',
+                      background: 'rgba(16,185,129,0.12)', color: '#10b981',
+                      fontSize: '1.1rem', fontWeight: 700
+                    }}>
+                      {calc.percentage}% Compatibilidade
+                    </span>
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* Botões de ação */}
+            <div style={{ display: 'flex', gap: '8px', marginTop: '16px', flexDirection: 'column' }}>
+              <button onClick={() => handleSendResult(detail)} style={{ ...btnPrimary, width: '100%' }}>
+                {detail.status === 'pago' ? '📧 Reenviar Relatório por Email' : '✅ Confirmar Pagamento e Enviar Email'}
+              </button>
+              <button
+                onClick={() => setDetail(null)}
+                style={{ ...btnSecondary, width: '100%' }}
+              >Fechar</button>
+            </div>
           </div>
         </div>
       )}
