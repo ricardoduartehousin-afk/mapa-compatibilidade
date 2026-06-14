@@ -792,7 +792,7 @@ export function getIntimateDynamic(destinySum, soulSum) {
 
 // ─── ENCERRAMENTO ───
 export const ENCERRAMENTO = {
-  mensagem: `Espero que tenha gostado do seu\nMAPA DE COMPATIBILIDADE\nATT\nCarina`
+  mensagem: `Espero que tenha gostado do seu\nMAPA DE COMPATIBILIDADE`
 };
 
 export default {

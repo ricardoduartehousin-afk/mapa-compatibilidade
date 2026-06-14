@@ -198,9 +198,17 @@ export default function MultiStepForm({ onSubmit }) {
             </label>
           ) : step.type === 'date' ? (
             <input
-              type="date"
+              type="text"
+              inputMode="numeric"
+              placeholder="dd / mm / aaaa"
               value={currentValue}
-              onChange={e => updateField(e.target.value)}
+              onChange={e => {
+                const raw = e.target.value.replace(/\D/g, '').slice(0, 8);
+                const formatted = raw
+                  .replace(/^(\d{2})(\d)/, '$1 / $2')
+                  .replace(/^(\d{2})\s\/\s(\d{2})(\d)/, '$1 / $2 / $3');
+                updateField(formatted);
+              }}
               onKeyDown={handleKeyDown}
               className="multi-step-input"
               autoFocus
