@@ -1,8 +1,9 @@
 import { NavLink } from 'react-router-dom';
-import { BarChart3, FileText, Activity, Beaker, ArrowLeft } from 'lucide-react';
+import { BarChart3, FileText, Activity, Beaker, Heart, ArrowLeft } from 'lucide-react';
 
 const links = [
   { to: '/dev', label: 'Admin', icon: BarChart3 },
+  { to: '/dev/mapadecompatibilidade', label: 'Mapa', icon: Heart },
   { to: '/relatorios', label: 'Relatórios', icon: FileText },
   { to: '/logs', label: 'Logs', icon: Activity },
   { to: '/testes', label: 'Testes', icon: Beaker },

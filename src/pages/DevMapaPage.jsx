@@ -1,41 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-import MultiStepForm from './components/MultiStepForm';
-import CalculatingScreen from './components/CalculatingScreen';
-import PaywallModal from './components/PaywallModal';
-import MapaResultado from './components/MapaResultado';
-import DevMenu from './components/DevMenu';
-import DevFab from './components/DevFab';
-import DevLogin from './admin/DevLogin';
-import DevLayout from './admin/DevLayout';
-import DevDashboard from './admin/DevDashboard';
-import DevLeads from './admin/DevLeads';
-import RelatoriosPage from './pages/RelatoriosPage';
-import LogsPage from './pages/LogsPage';
-import TestesPage from './pages/TestesPage';
-import DevMapaPage from './pages/DevMapaPage';
-import { isLoggedIn } from './admin/api';
-import { calculateCompatibility } from './utils/numerology';
-import ENV from './config/env';
+import React, { useState } from 'react';
+import MultiStepForm from '../components/MultiStepForm';
+import CalculatingScreen from '../components/CalculatingScreen';
+import PaywallModal from '../components/PaywallModal';
+import MapaResultado from '../components/MapaResultado';
+import { calculateCompatibility } from '../utils/numerology';
 
 const API = import.meta.env.VITE_API_URL || '';
 
-function MainApp() {
+export default function DevMapaPage() {
   const [step, setStep] = useState('input');
   const [formData, setFormData] = useState(null);
   const [results, setResults] = useState(null);
   const [leadId, setLeadId] = useState(null);
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  useEffect(() => {
-    const stored = sessionStorage.getItem('dev_test_data');
-    if (stored) {
-      sessionStorage.removeItem('dev_test_data');
-      const data = JSON.parse(stored);
-      handleFormSubmit(data);
-    }
-  }, []);
 
   const handleFormSubmit = async (data) => {
     setFormData(data);
@@ -97,13 +73,15 @@ function MainApp() {
   };
 
   return (
-    <div className="cosmic-container">
+    <div className="cosmic-container" style={{ paddingTop: 30 }}>
       <div className="glow-orb glow-blue"></div>
       <div className="glow-orb glow-orange"></div>
 
       <header className="header-logo">
         <h1>Teste de <span>Afinidade</span></h1>
-        <p>Análise de Compatibilidade do Casal</p>
+        <p style={{ color: '#a78bfa', fontSize: '0.75rem', fontWeight: 600 }}>
+          ⚡ Ambiente DEV — Mapa de Compatibilidade
+        </p>
       </header>
 
       {step === 'input' && (
@@ -124,17 +102,15 @@ function MainApp() {
           <p style={{ color: '#64748b', fontSize: '0.75rem', textAlign: 'center', marginTop: '16px' }}>
             Pagamento 100% seguro • QR Code Pix • Pagamento processado por Asaas
           </p>
-          {(ENV.devToolsEnabled || (location.pathname.startsWith('/dev') && isLoggedIn())) && (
-            <div style={{ textAlign: 'center', marginTop: 8 }}>
-              <button
-                onClick={handlePaymentSuccess}
-                className="btn btn-secondary"
-                style={{ background: '#3b82f6', color: 'white', border: 'none' }}
-              >
-                🚀 Pular Pagamento (DEV)
-              </button>
-            </div>
-          )}
+          <div style={{ textAlign: 'center', marginTop: 8 }}>
+            <button
+              onClick={handlePaymentSuccess}
+              className="btn btn-secondary"
+              style={{ background: '#3b82f6', color: 'white', border: 'none' }}
+            >
+              🚀 Pular Pagamento (DEV)
+            </button>
+          </div>
         </>
       )}
 
@@ -153,52 +129,5 @@ function MainApp() {
         </p>
       </footer>
     </div>
-  );
-}
-
-function DevRoute({ children }) {
-  const location = useLocation();
-  if (!isLoggedIn()) {
-    return <DevLogin />;
-  }
-  return <DevLayout>{children}</DevLayout>;
-}
-
-function DevToolsLayout({ children }) {
-  return (
-    <>
-      <DevMenu />
-      {children}
-    </>
-  );
-}
-
-export default function App() {
-  const location = useLocation();
-  const isAdminRoute = location.pathname.startsWith('/dev');
-
-  return (
-    <>
-      {(ENV.devToolsEnabled || isAdminRoute) && <DevMenu />}
-
-      <DevFab />
-
-      <Routes>
-        <Route path="/dev" element={<DevLogin />} />
-        <Route path="/dev/dashboard" element={<DevRoute><DevDashboard /></DevRoute>} />
-        <Route path="/dev/leads" element={<DevRoute><DevLeads /></DevRoute>} />
-        <Route path="/dev/mapadecompatibilidade" element={<DevRoute><DevMapaPage /></DevRoute>} />
-
-        {ENV.devToolsEnabled && (
-          <>
-            <Route path="/relatorios" element={<DevToolsLayout><RelatoriosPage /></DevToolsLayout>} />
-            <Route path="/logs" element={<DevToolsLayout><LogsPage /></DevToolsLayout>} />
-            <Route path="/testes" element={<DevToolsLayout><TestesPage /></DevToolsLayout>} />
-          </>
-        )}
-
-        <Route path="/*" element={<MainApp />} />
-      </Routes>
-    </>
   );
 }
