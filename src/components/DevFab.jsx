@@ -14,7 +14,7 @@ const testData = {
 export default function DevFab() {
   const navigate = useNavigate();
   const location = useLocation();
-  const isAdmin = location.pathname.startsWith('/dev');
+  const isAdmin = location.pathname.startsWith('/dev') && location.pathname !== '/dev';
 
   if (!ENV.devToolsEnabled && !(isAdmin && isLoggedIn())) return null;
 

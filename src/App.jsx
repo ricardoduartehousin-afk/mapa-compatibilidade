@@ -175,7 +175,7 @@ function DevToolsLayout({ children }) {
 
 export default function App() {
   const location = useLocation();
-  const isAdminRoute = location.pathname.startsWith('/dev');
+  const isAdminRoute = location.pathname.startsWith('/dev') && location.pathname !== '/dev';
 
   return (
     <>
