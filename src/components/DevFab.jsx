@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import ENV from '../config/env';
+import { isLoggedIn } from '../admin/api';
 
 const testData = {
   nomeP1: 'Ana Silva',
@@ -15,7 +16,7 @@ export default function DevFab() {
   const location = useLocation();
   const isAdmin = location.pathname.startsWith('/dev');
 
-  if (!ENV.devToolsEnabled && !isAdmin) return null;
+  if (!ENV.devToolsEnabled && !(isAdmin && isLoggedIn())) return null;
 
   const handleClick = () => {
     sessionStorage.setItem('dev_test_data', JSON.stringify(testData));

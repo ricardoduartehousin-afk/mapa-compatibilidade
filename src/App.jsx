@@ -123,7 +123,7 @@ function MainApp() {
           <p style={{ color: '#64748b', fontSize: '0.75rem', textAlign: 'center', marginTop: '16px' }}>
             Pagamento 100% seguro • QR Code Pix • Pagamento processado por Asaas
           </p>
-          {(ENV.devToolsEnabled || location.pathname.startsWith('/dev')) && (
+          {(ENV.devToolsEnabled || (location.pathname.startsWith('/dev') && isLoggedIn())) && (
             <div style={{ textAlign: 'center', marginTop: 8 }}>
               <button
                 onClick={handlePaymentSuccess}
