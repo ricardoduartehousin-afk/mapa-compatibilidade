@@ -5,6 +5,7 @@ import CalculatingScreen from './components/CalculatingScreen';
 import PaywallModal from './components/PaywallModal';
 import MapaResultado from './components/MapaResultado';
 import DevMenu from './components/DevMenu';
+import DevFab from './components/DevFab';
 import DevLogin from './admin/DevLogin';
 import DevLayout from './admin/DevLayout';
 import DevDashboard from './admin/DevDashboard';
@@ -94,6 +95,8 @@ function MainApp() {
         <h1>Teste de <span>Afinidade</span></h1>
         <p>Análise de Compatibilidade do Casal</p>
       </header>
+
+      <DevFab onGenerateTest={handleFormSubmit} />
 
       {step === 'input' && (
         <MultiStepForm onSubmit={handleFormSubmit} />
