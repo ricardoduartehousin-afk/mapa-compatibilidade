@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import ENV from '../config/env';
 
 const testData = {
@@ -18,25 +17,21 @@ export default function DevFab({ onGenerateTest }) {
       onClick={() => onGenerateTest(testData)}
       style={{
         position: 'fixed',
-        bottom: 24,
-        right: 24,
+        top: 36,
+        right: 16,
         zIndex: 99998,
-        background: 'linear-gradient(135deg, #7c3aed, #3b82f6)',
+        background: '#7c3aed',
         color: '#fff',
         border: 'none',
-        borderRadius: 60,
-        padding: '14px 24px',
-        fontSize: '0.85rem',
-        fontWeight: 700,
+        borderRadius: 8,
+        padding: '8px 16px',
+        fontSize: '0.8rem',
+        fontWeight: 600,
         cursor: 'pointer',
-        boxShadow: '0 4px 20px rgba(124, 58, 237, 0.4)',
         display: 'flex',
         alignItems: 'center',
-        gap: 8,
-        transition: 'transform 0.2s',
+        gap: 6,
       }}
-      onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
-      onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
     >
       🧪 Teste Rápido
     </button>
