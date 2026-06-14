@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import ENV from '../config/env';
 
 const testData = {
@@ -12,8 +12,10 @@ const testData = {
 
 export default function DevFab() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isAdmin = location.pathname.startsWith('/dev');
 
-  if (!ENV.devToolsEnabled) return null;
+  if (!ENV.devToolsEnabled && !isAdmin) return null;
 
   const handleClick = () => {
     sessionStorage.setItem('dev_test_data', JSON.stringify(testData));

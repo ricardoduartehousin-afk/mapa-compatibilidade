@@ -123,7 +123,7 @@ function MainApp() {
           <p style={{ color: '#64748b', fontSize: '0.75rem', textAlign: 'center', marginTop: '16px' }}>
             Pagamento 100% seguro • QR Code Pix • Pagamento processado por Asaas
           </p>
-          {ENV.devToolsEnabled && (
+          {(ENV.devToolsEnabled || location.pathname.startsWith('/dev')) && (
             <div style={{ textAlign: 'center', marginTop: 8 }}>
               <button
                 onClick={handlePaymentSuccess}
@@ -173,9 +173,12 @@ function DevToolsLayout({ children }) {
 }
 
 export default function App() {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/dev');
+
   return (
     <>
-      {ENV.devToolsEnabled && <DevMenu />}
+      {(ENV.devToolsEnabled || isAdminRoute) && <DevMenu />}
 
       <DevFab />
 
