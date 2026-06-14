@@ -1,5 +1,5 @@
 {
-  "name": "jornada-interior-server",
+  "name": "teste-de-afinidade-server",
   "version": "1.0.0",
   "type": "module",
   "scripts": {

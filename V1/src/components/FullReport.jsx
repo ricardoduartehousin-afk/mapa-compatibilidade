@@ -167,7 +167,7 @@ export default function FullReport({ data, results, onReset }) {
   };
 
   const handleShare = () => {
-    const shareUrl = `${window.location.origin}?ref=jornadainterior&p1=${encodeURIComponent(data.nomeP1)}&p2=${encodeURIComponent(data.nomeP2)}`;
+    const shareUrl = `${window.location.origin}?ref=testedeafinidade&p1=${encodeURIComponent(data.nomeP1)}&p2=${encodeURIComponent(data.nomeP2)}`;
     navigator.clipboard.writeText(shareUrl);
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 3000);

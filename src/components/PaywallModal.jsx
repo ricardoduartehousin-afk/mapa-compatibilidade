@@ -12,7 +12,7 @@ export default function PaywallModal({ percentage, leadId, onPaymentSuccess }) {
   const [pixError, setPixError] = useState(false);
   const [polling, setPolling] = useState(false);
 
-  const fallbackPixCode = "00020101021226870014br.gov.bcb.pix2565api.asaas.com/v1/pix/qr-codes/1234567890abcdef1234567890abcdef520400005303986540519.905802BR5916JornadaInterior6009SaoPaulo62070503***6304abcd";
+  const fallbackPixCode = "00020101021226870014br.gov.bcb.pix2565api.asaas.com/v1/pix/qr-codes/1234567890abcdef1234567890abcdef520400005303986540519.905802BR5916TesteDeAfinidade6009SaoPaulo62070503***6304abcd";
 
   useEffect(() => {
     if (leadId) {
@@ -111,20 +111,6 @@ export default function PaywallModal({ percentage, leadId, onPaymentSuccess }) {
       setExpired(false);
       setCopied(false);
     }
-  };
-
-  const handleSimularPagamento = async () => {
-    if (leadId) {
-      try {
-        await fetch(`${API}/api/pix/simular-pagamento`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ leadId })
-        });
-      } catch {
-      }
-    }
-    onPaymentSuccess();
   };
 
   const qrCodeUrl = pixData?.qrCode
@@ -234,20 +220,6 @@ export default function PaywallModal({ percentage, leadId, onPaymentSuccess }) {
             </button>
           </div>
         )}
-
-        <div className="simulation-banner">
-          <p>🔒 <strong>Simulação de Pagamento</strong></p>
-          <p style={{ fontSize: '0.75rem', marginTop: '0.25rem', opacity: 0.85 }}>
-            Clique para testar o fluxo de pagamento aprovado.
-          </p>
-          <button
-            type="button"
-            onClick={handleSimularPagamento}
-            id="btn-simulate-payment"
-          >
-            Simular Pagamento Aprovado
-          </button>
-        </div>
       </div>
     </div>
   );

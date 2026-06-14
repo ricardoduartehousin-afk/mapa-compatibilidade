@@ -1,18 +1,30 @@
 import React, { useState } from 'react';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import MultiStepForm from './components/MultiStepForm';
 import CalculatingScreen from './components/CalculatingScreen';
 import PaywallModal from './components/PaywallModal';
-import ResultsScreen from './components/ResultsScreen';
-import FullReport from './components/FullReport';
+import MapaResultado from './components/MapaResultado';
+import DevMenu from './components/DevMenu';
+import DevLogin from './admin/DevLogin';
+import DevLayout from './admin/DevLayout';
+import DevDashboard from './admin/DevDashboard';
+import DevLeads from './admin/DevLeads';
+import RelatoriosPage from './pages/RelatoriosPage';
+import LogsPage from './pages/LogsPage';
+import TestesPage from './pages/TestesPage';
+import { isLoggedIn } from './admin/api';
 import { calculateCompatibility } from './utils/numerology';
+import ENV from './config/env';
 
 const API = import.meta.env.VITE_API_URL || '';
 
-export default function App() {
+function MainApp() {
   const [step, setStep] = useState('input');
   const [formData, setFormData] = useState(null);
   const [results, setResults] = useState(null);
   const [leadId, setLeadId] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleFormSubmit = async (data) => {
     setFormData(data);
@@ -20,9 +32,9 @@ export default function App() {
     const res = calculateCompatibility(data.nomeP1, data.dataP1, data.nomeP2, data.dataP2);
     setResults(res);
 
-    const leads = JSON.parse(localStorage.getItem('jornada_interior_leads') || '[]');
+    const leads = JSON.parse(localStorage.getItem('teste_de_afinidade_leads') || '[]');
     leads.push({ ...data, status: 'pendente', createdAt: new Date().toISOString() });
-    localStorage.setItem('jornada_interior_leads', JSON.stringify(leads));
+    localStorage.setItem('teste_de_afinidade_leads', JSON.stringify(leads));
 
     try {
       const response = await fetch(`${API}/api/leads`, {
@@ -49,26 +61,25 @@ export default function App() {
   };
 
   const handleCalculatingComplete = () => {
+    if (!ENV.paywallEnabled) {
+      handlePaymentSuccess();
+      return;
+    }
     setStep('paywall');
   };
 
   const handlePaymentSuccess = () => {
     if (formData) {
-      const leads = JSON.parse(localStorage.getItem('jornada_interior_leads') || '[]');
+      const leads = JSON.parse(localStorage.getItem('teste_de_afinidade_leads') || '[]');
       const updatedLeads = leads.map(lead => {
         if (lead.email === formData.email && lead.whatsapp === formData.whatsapp) {
           return { ...lead, status: 'pago' };
         }
         return lead;
       });
-      localStorage.setItem('jornada_interior_leads', JSON.stringify(updatedLeads));
+      localStorage.setItem('teste_de_afinidade_leads', JSON.stringify(updatedLeads));
     }
-
-    setStep('results');
-  };
-
-  const handleContinueToFullReport = () => {
-    setStep('report');
+    setStep('done');
   };
 
   const handleReset = () => {
@@ -84,7 +95,7 @@ export default function App() {
       <div className="glow-orb glow-orange"></div>
 
       <header className="header-logo">
-        <h1>Jornada <span>Interior</span></h1>
+        <h1>Teste de <span>Afinidade</span></h1>
         <p>Análise de Compatibilidade do Casal</p>
       </header>
 
@@ -97,23 +108,20 @@ export default function App() {
       )}
 
       {step === 'paywall' && results && (
-        <PaywallModal
-          percentage={results.percentage}
-          leadId={leadId}
-          onPaymentSuccess={handlePaymentSuccess}
-        />
+        <>
+          <PaywallModal
+            percentage={results.percentage}
+            leadId={leadId}
+            onPaymentSuccess={handlePaymentSuccess}
+          />
+          <p style={{ color: '#64748b', fontSize: '0.75rem', textAlign: 'center', marginTop: '16px' }}>
+            Pagamento 100% seguro • QR Code Pix • Pagamento processado por Asaas
+          </p>
+        </>
       )}
 
-      {step === 'results' && results && formData && (
-        <ResultsScreen
-          data={formData}
-          results={results}
-          onContinue={handleContinueToFullReport}
-        />
-      )}
-
-      {step === 'report' && results && formData && (
-        <FullReport
+      {step === 'done' && results && formData && (
+        <MapaResultado
           data={formData}
           results={results}
           onReset={handleReset}
@@ -121,11 +129,52 @@ export default function App() {
       )}
 
       <footer className="footer-text">
-        <p>© {new Date().getFullYear()} Jornada Interior. Todos os direitos reservados.</p>
+        <p>© {new Date().getFullYear()} Teste de Afinidade. Todos os direitos reservados.</p>
         <p style={{ marginTop: '0.25rem', fontSize: '0.7rem', opacity: 0.7 }}>
           Desenvolvido com fins de autoconhecimento e orientação numerológica.
         </p>
       </footer>
     </div>
+  );
+}
+
+function DevRoute({ children }) {
+  const location = useLocation();
+  if (!isLoggedIn()) {
+    return <DevLogin />;
+  }
+  return <DevLayout>{children}</DevLayout>;
+}
+
+function DevToolsLayout({ children }) {
+  return (
+    <>
+      <DevMenu />
+      {children}
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <>
+      {ENV.devToolsEnabled && <DevMenu />}
+
+      <Routes>
+        <Route path="/dev" element={<DevLogin />} />
+        <Route path="/dev/dashboard" element={<DevRoute><DevDashboard /></DevRoute>} />
+        <Route path="/dev/leads" element={<DevRoute><DevLeads /></DevRoute>} />
+
+        {ENV.devToolsEnabled && (
+          <>
+            <Route path="/relatorios" element={<DevToolsLayout><RelatoriosPage /></DevToolsLayout>} />
+            <Route path="/logs" element={<DevToolsLayout><LogsPage /></DevToolsLayout>} />
+            <Route path="/testes" element={<DevToolsLayout><TestesPage /></DevToolsLayout>} />
+          </>
+        )}
+
+        <Route path="/*" element={<MainApp />} />
+      </Routes>
+    </>
   );
 }

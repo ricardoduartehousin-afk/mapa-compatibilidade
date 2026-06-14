@@ -16,7 +16,7 @@ function getAsaasBaseUrl() {
 function getAsaasHeaders() {
   return {
     'Content-Type': 'application/json',
-    'User-Agent': 'JornadaInterior/1.0',
+    'User-Agent': 'TesteDeAfinidade/1.0',
     'access_token': process.env.ASAAS_API_KEY
   };
 }
@@ -95,7 +95,7 @@ async function gerarCobrancaAsaas(valor, nomeCliente, cpfCliente, emailCliente) 
       billingType: 'PIX',
       value: valor,
       dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      description: 'Mapa de Compatibilidade - Jornada Interior',
+      description: 'Mapa de Compatibilidade - Teste de Afinidade',
       postalService: false
     })
   });
@@ -244,7 +244,7 @@ router.post('/gerar', async (req, res) => {
     }
   }
 
-  const mockPixCode = "00020101021226870014br.gov.bcb.pix2565api.asaas.com/v1/pix/qr-codes/1234567890abcdef1234567890abcdef520400005303986540519.905802BR5916JornadaInterior6009SaoPaulo62070503***6304abcd";
+  const mockPixCode = "00020101021226870014br.gov.bcb.pix2565api.asaas.com/v1/pix/qr-codes/1234567890abcdef1234567890abcdef520400005303986540519.905802BR5916TesteDeAfinidade6009SaoPaulo62070503***6304abcd";
 
   return res.json({
     qrCode: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(mockPixCode)}`,

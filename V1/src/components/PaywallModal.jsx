@@ -6,7 +6,7 @@ export default function PaywallModal({ percentage, onPaymentSuccess }) {
   const [copied, setCopied] = useState(false);
 
   // Exemplo de código Pix Mockado para simulação
-  const pixCode = "00020101021226870014br.gov.bcb.pix2565api.asaas.com/v1/pix/qr-codes/1234567890abcdef1234567890abcdef520400005303986540519.905802BR5916JornadaInterior6009SaoPaulo62070503***6304abcd";
+  const pixCode = "00020101021226870014br.gov.bcb.pix2565api.asaas.com/v1/pix/qr-codes/1234567890abcdef1234567890abcdef520400005303986540519.905802BR5916TesteDeAfinidade6009SaoPaulo62070503***6304abcd";
 
   // Contador regressivo
   useEffect(() => {

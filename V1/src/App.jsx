@@ -23,9 +23,9 @@ export default function App() {
     setResults(res);
 
     // Salva o lead no localStorage (simulando salvar no banco de dados)
-    const leads = JSON.parse(localStorage.getItem('jornada_interior_leads') || '[]');
+    const leads = JSON.parse(localStorage.getItem('teste_de_afinidade_leads') || '[]');
     leads.push({ ...data, status: 'pendente', createdAt: new Date().toISOString() });
-    localStorage.setItem('jornada_interior_leads', JSON.stringify(leads));
+    localStorage.setItem('teste_de_afinidade_leads', JSON.stringify(leads));
 
     setStep('calculating');
   };
@@ -37,14 +37,14 @@ export default function App() {
   const handlePaymentSuccess = () => {
     // Atualiza status do lead no localStorage para pago
     if (formData) {
-      const leads = JSON.parse(localStorage.getItem('jornada_interior_leads') || '[]');
+      const leads = JSON.parse(localStorage.getItem('teste_de_afinidade_leads') || '[]');
       const updatedLeads = leads.map(lead => {
         if (lead.email === formData.email && lead.whatsapp === formData.whatsapp) {
           return { ...lead, status: 'pago' };
         }
         return lead;
       });
-      localStorage.setItem('jornada_interior_leads', JSON.stringify(updatedLeads));
+      localStorage.setItem('teste_de_afinidade_leads', JSON.stringify(updatedLeads));
     }
 
     setStep('report');
@@ -63,7 +63,7 @@ export default function App() {
       <div className="glow-orb glow-orange"></div>
 
       <header className="header-logo">
-        <h1>Jornada <span>Interior</span></h1>
+        <h1>Teste de <span>Afinidade</span></h1>
         <p>Análise de Compatibilidade do Casal</p>
       </header>
 
@@ -92,7 +92,7 @@ export default function App() {
       )}
 
       <footer className="footer-text">
-        <p>© {new Date().getFullYear()} Jornada Interior. Todos os direitos reservados.</p>
+        <p>© {new Date().getFullYear()} Teste de Afinidade. Todos os direitos reservados.</p>
         <p style={{ marginTop: '0.25rem', fontSize: '0.7rem', opacity: 0.7 }}>
           Desenvolvido com fins de autoconhecimento e orientação numerológica.
         </p>

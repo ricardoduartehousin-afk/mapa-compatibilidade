@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,700;1,500&display=swap');
-
+@import url('./print.css');
 :root {
   --bg-dark: #070a13;
   --bg-deep-blue: #0b112c;
@@ -281,6 +281,33 @@ body {
 
 .btn-orange:active {
   transform: translateY(1px);
+}
+
+.dev-skip-btn {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 999;
+  background: rgba(249, 115, 22, 0.15);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(249, 115, 22, 0.3);
+  color: var(--accent-orange);
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.3s;
+  opacity: 0.6;
+}
+.dev-skip-btn:hover {
+  opacity: 1;
+  background: rgba(249, 115, 22, 0.25);
+  border-color: var(--accent-orange);
+  box-shadow: 0 0 12px rgba(249, 115, 22, 0.3);
 }
 
 .btn-secondary {

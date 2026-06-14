@@ -3,42 +3,29 @@
 // Atribui valores únicos de 1 a 8 a cada letra do alfabeto.
 // Diferente da Pitagórica, a Cabalística é assimétrica e reflete
 // a energia vibratória de cada símbolo individualmente.
-// Referência: Numerologia Cabalística clássica
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const LETTER_MAP = {
-  // Valor 1: A, I, J, Q, Y
   a: 1, i: 1, j: 1, q: 1, y: 1,
-  // Valor 2: B, K, R
   b: 2, k: 2, r: 2,
-  // Valor 3: C, G, L, S
   c: 3, g: 3, l: 3, s: 3,
-  // Valor 4: D, M, T
   d: 4, m: 4, t: 4,
-  // Valor 5: E, H, N, X
   e: 5, h: 5, n: 5, x: 5,
-  // Valor 6: U, V, W
   u: 6, v: 6, w: 6,
-  // Valor 7: O, Z
   o: 7, z: 7,
-  // Valor 8: F, P
   f: 8, p: 8
-  // Nota: a letra 9 não é usada na Cabalística Caldeia pois
-  // o 9 é considerado sagrado/divino e não é atribuído a letras.
 };
 
-// Remove acentos e caracteres especiais, mantendo apenas letras de A-Z
 function normalizeString(str) {
   if (!str) return '';
   return str
     .toLowerCase()
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // Remove acentos (á → a, é → e, etc.)
+    .replace(/[\u0300-\u036f]/g, '')
     .replace(/[ñ]/g, 'n')
     .replace(/[ç]/g, 'c')
-    .replace(/[^a-z]/g, ''); // Mantém apenas letras
+    .replace(/[^a-z]/g, '');
 }
 
-// Reduz um número somando seus dígitos até restar 1 dígito (ou Números Mestres 11 e 22)
 function reduceNumber(num, preserveMaster = false) {
   let current = num;
   while (current > 9) {
@@ -48,13 +35,9 @@ function reduceNumber(num, preserveMaster = false) {
     const digits = current.toString().split('').map(Number);
     current = digits.reduce((acc, d) => acc + d, 0);
   }
-  return current || 1; // Garante que nunca retorna 0
+  return current || 1;
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// NÚMERO DA EXPRESSÃO — soma de todas as letras do nome
-// Representa o potencial externo e a personalidade visível.
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 export function calculateExpression(name) {
   const normalized = normalizeString(name);
   let sum = 0;
@@ -63,13 +46,9 @@ export function calculateExpression(name) {
       sum += LETTER_MAP[char];
     }
   }
-  return reduceNumber(sum, true); // Preserva 11 e 22 (Números Mestres)
+  return reduceNumber(sum, true);
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// NÚMERO DE ALMA (IMPULSO DA ALMA) — soma apenas das VOGAIS
-// Representa os desejos mais profundos e motivações internas.
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 export function calculateSoulNumber(name) {
   const normalized = normalizeString(name);
   const vogals = ['a', 'e', 'i', 'o', 'u'];
@@ -79,25 +58,15 @@ export function calculateSoulNumber(name) {
       sum += LETTER_MAP[char];
     }
   }
-  return reduceNumber(sum, true); // Preserva 11 e 22
+  return reduceNumber(sum, true);
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// NÚMERO DO DESTINO (CAMINHO DE VIDA) — soma dos dígitos da data
-// Representa a missão de vida e o caminho kármico.
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 export function calculateDestiny(dateStr) {
-  // Remove tudo que não for número e soma dígito por dígito
   const numbersOnly = dateStr.replace(/\D/g, '');
   const sum = numbersOnly.split('').map(Number).reduce((acc, d) => acc + d, 0);
-  return reduceNumber(sum, true); // Preserva 11 e 22 no Caminho de Vida
+  return reduceNumber(sum, true);
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// CÁLCULO DE COMPATIBILIDADE DO CASAL
-// Usa os 6 fatores cabalísticos: Alma + Expressão + Destino
-// de cada parceiro para gerar um resultado único por casal.
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 export function calculateCompatibility(p1Name, p1Date, p2Name, p2Date) {
   const soul1 = calculateSoulNumber(p1Name);
   const exp1  = calculateExpression(p1Name);
@@ -107,8 +76,6 @@ export function calculateCompatibility(p1Name, p1Date, p2Name, p2Date) {
   const exp2  = calculateExpression(p2Name);
   const dest2 = calculateDestiny(p2Date);
 
-  // Soma os 6 fatores cabalísticos do casal para gerar o número final
-  // Os Números Mestres são reduzidos aqui para caber nos 9 relatórios
   const reducedSoul1 = soul1 > 9 ? reduceNumber(soul1, false) : soul1;
   const reducedExp1  = exp1  > 9 ? reduceNumber(exp1,  false) : exp1;
   const reducedSoul2 = soul2 > 9 ? reduceNumber(soul2, false) : soul2;
@@ -119,9 +86,8 @@ export function calculateCompatibility(p1Name, p1Date, p2Name, p2Date) {
   const totalSum = reducedSoul1 + reducedExp1 + reducedDest1
                  + reducedSoul2 + reducedExp2 + reducedDest2;
 
-  const finalNumber = reduceNumber(totalSum, false); // 1 a 9
+  const finalNumber = reduceNumber(totalSum, false);
 
-  // Porcentagem de afinidade: determinística mas variada, baseada nos 6 fatores
   const raw = ((reducedSoul1 * 13) + (reducedExp1 * 7) + (reducedDest1 * 11)
              + (reducedSoul2 * 17) + (reducedExp2 * 5) + (reducedDest2 * 3)) % 36;
   const percentage = Math.max(55, Math.min(97, 55 + raw));
@@ -139,568 +105,562 @@ export function calculateCompatibility(p1Name, p1Date, p2Name, p2Date) {
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// RELATÓRIOS COMPLETOS — Numerologia Cabalística (1 a 9)
-// Cada relatório contém 11 seções detalhadas + prévia gratuita
+// RELATÓRIOS COMPLETOS — Expansão Psicológica e Comportamental
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 export const REPORTS = {
   1: {
-    title: "Perfil 1: A Força da Liderança e Independência",
-    freeText: "Este é um casal que se destaca pela iniciativa, coragem e desejo constante de crescimento. Existe entre vocês um impulso natural para buscar novas conquistas e realizações. O grande aprendizado será cooperar em vez de competir, unindo forças para construir algo maior.",
+    title: "Dinâmica 1: Liderança, Independência e Crescimento Contínuo",
+    freeText: "A Dinâmica 1 representa a união de duas forças autônomas. Vocês não se uniram por dependência, mas por uma profunda admiração pela capacidade de realização um do outro. A relação é pautada no incentivo contínuo e na ausência de comodismo.",
     sections: {
       visaoGeral: [
-        "Este é um casal que se destaca pela iniciativa, coragem e desejo constante de crescimento. Não é uma relação que se contenta com a estagnação — há sempre um impulso em direção a novos desafios.",
-        "Uma característica marcante desta relação é a força de vontade que ambos possuem. Quando direcionada para objetivos comuns, essa determinação se torna o maior motor da parceria.",
-        "Na prática, vocês não esperam que as coisas aconteçam: fazem acontecer. O desafio está em aprender a remar na mesma direção, em vez de disputar quem segura o leme.",
-        "O relacionamento costuma começar com intensidade, com ambos se sentindo admirados pela força e capacidade de realização que percebem um no outro."
+        "A dinâmica do casal 1 é estruturada sobre o respeito mútuo à individualidade. Na psicologia dos relacionamentos, costuma-se dizer que casais saudáveis são formados por dois 'inteiros', e esta união reflete exatamente isso. Vocês não se veem como 'metades da laranja'; enxergam a parceria como a soma de duas potências.",
+        "Uma das características mais fortes dessa relação é o movimento. Não existe muito espaço para a inércia ou para a estagnação. Se um dos parceiros resolve estacionar na vida profissional, pessoal ou emocional, o outro sentirá uma inquietação imediata. Há um empurrão mútuo (às vezes sutil, às vezes direto) para que ambos atinjam suas melhores versões.",
+        "Existe também um forte componente de liderança. Vocês tendem a assumir a frente dos problemas quando eles surgem. Isso faz de vocês uma equipe imbatível contra desafios externos, mas pode se tornar um problema quando a disputa por quem 'está no comando' acontece dentro de casa.",
+        "O sucesso desta união baseia-se na capacidade de alternar o poder. Um relacionamento sustentável para esse perfil exige que ambos sintam orgulho das vitórias do parceiro, sem cair na armadilha da competição conjugal."
       ],
       atracaoInicial: [
-        "A atração entre vocês nasce da admiração pela força que cada um percebe no outro. Não é uma conexão que brota da fragilidade, mas do reconhecimento de duas pessoas que se veem como capazes e realizadoras.",
-        "Existe fascínio pela independência, pela personalidade marcante e pela capacidade de realização que cada um carrega.",
-        "Vocês se enxergam como pessoas que têm objetivos claros e sentem que, juntos, podem conquistar ainda mais do que separados.",
-        "Desde o início, há intensidade, iniciativa e um desejo mútuo de avançar rapidamente na construção da relação."
+        "A atração inicial entre vocês raramente nasceu de vulnerabilidade ou necessidade de resgate. Na verdade, foi o magnetismo da autossuficiência que chamou a atenção. Vocês se interessaram pela postura de quem sabe o que quer e não tem medo de ir atrás.",
+        "O flerte nessa dinâmica frequentemente envolveu certo desafio intelectual e demonstrações sutis de competência. Vocês admiraram a inteligência, a ambição ou a postura decidida um do outro logo nos primeiros contatos.",
+        "Diferente de casais que se fundem imediatamente e perdem a identidade no começo do namoro, vocês mantiveram o senso de individualidade, o que só fez o interesse aumentar. A química aqui nasce do respeito."
       ],
       compatibilidadeEmocional: [
-        "Emocionalmente, esta não é uma união excessivamente dependente. Ambos valorizam sua liberdade, autonomia e espaço individual dentro da relação.",
-        "O amor costuma ser demonstrado mais através de atitudes práticas, proteção e incentivo ao crescimento pessoal do que através de palavras ou gestos românticos tradicionais.",
-        "O desafio aparece quando um dos dois começa a sentir que suas necessidades emocionais não estão sendo reconhecidas. Como ambos são pessoas fortes, às vezes um pode não perceber que o outro também precisa de acolhimento.",
-        "Aprender a verbalizar sentimentos de forma clara e consistente será fundamental para aprofundar a conexão."
+        "No aspecto emocional, a compatibilidade de vocês depende muito do espaço pessoal. Vocês precisam de oxigênio emocional para respirar. Ciúmes exagerados, cobranças por atenção em tempo integral ou tentativas de controle são recebidos como sinais de alerta vermelhos por essa dinâmica.",
+        "Isso não significa que o amor seja frio. Pelo contrário: a demonstração de afeto é forte, protetora e extremamente leal. Porém, o amor de vocês é expresso através do respeito, de ações práticas e do encorajamento. Dizer 'eu acredito no seu potencial' é, para vocês, uma das mais profundas declarações de amor.",
+        "A fraqueza emocional dessa união pode ser a dificuldade de demonstrar vulnerabilidade. Como ambos valorizam a imagem de força, confessar medo, insegurança ou tristeza pode ser um tabu doloroso. O casal ganha uma nova camada de intimidade quando ambos aprendem que chorar no ombro do outro não diminui o valor de nenhum dos dois."
       ],
       comunicacao: [
-        "A comunicação tende a ser direta, objetiva e prática. Vocês preferem resolver problemas rapidamente em vez de prolongar discussões.",
-        "No entanto, justamente pela personalidade forte de ambos, conflitos podem surgir quando cada um acredita firmemente estar certo. O crescimento do casal depende da capacidade de ouvir sem transformar toda divergência em competição."
+        "A comunicação entre vocês é caracterizada pela objetividade e, em grande parte, pela franqueza. Se há um problema, a tendência é colocá-lo sobre a mesa e dissecá-lo até encontrar uma solução tática.",
+        "Essa clareza é maravilhosa para a vida prática, mas nas questões emocionais, a objetividade excessiva pode ferir. Se um de vocês precisa apenas de validação emocional ('estou me sentindo frustrado hoje'), e o outro responde imediatamente com uma lista de três passos lógicos para resolver o problema, a comunicação falha.",
+        "O aprendizado aqui é a 'escuta ativa e empática', em oposição à 'escuta resolutiva'. Muitas vezes, o outro não quer que você resolva o problema dele; ele quer apenas que você ouça e compreenda o que ele sente."
       ],
       amorIntimidade: [
-        "A vida amorosa costuma ser intensa, apaixonada e cheia de vitalidade. Existe forte atração física e um desejo constante de conquistar o parceiro, mesmo após anos de convivência.",
-        "O romance floresce quando ambos continuam admirando as qualidades e conquistas um do outro.",
-        "Quando a admiração desaparece — pela rotina ou falta de cuidado — a paixão pode enfraquecer rapidamente. Manter vivo o olhar de admiração é um dos segredos mais importantes para este casal."
+        "A intimidade de vocês é ativa, física e vibrante. A paixão costuma se manter alta na mesma proporção em que a admiração intelectual e profissional se mantém. Para vocês, ver o parceiro no seu melhor (seja fechando um negócio, seja brilhando em seu hobby) é um forte afrodisíaco.",
+        "Contudo, a rotina esmagadora e o excesso de responsabilidades que ambos costumam assumir podem transformar o quarto em uma extensão do escritório ou apenas um local para dormir. Vocês precisam de momentos em que os 'crachás' de resolução de problemas fiquem do lado de fora.",
+        "O flerte diário não pode morrer. Lembrar de conquistar o outro, mesmo após anos de união, é o que garante a saúde amorosa dessa dupla."
       ],
       vidaFinanceira: [
-        "Esta é uma combinação favorável para construção patrimonial. O casal possui energia empreendedora e disposição para iniciar projetos.",
-        "Podem prosperar através de negócios próprios, investimentos ou atividades que exijam liderança e iniciativa.",
-        "O risco está em decisões impulsivas ou no excesso de confiança. Planejamento e estratégia conjunta serão fundamentais para maximizar resultados e evitar perdas."
+        "Este é, sem dúvida, um dos casais com maior potencial financeiro e patrimonial. Ambos possuem energia de sobra para o trabalho e visão de futuro. Vocês não se contentam com o básico e têm a ambição necessária para criar um padrão de vida muito confortável.",
+        "A gestão financeira, porém, pode ser um campo de batalha caso não haja transparência total e divisão de territórios. Como ambos gostam de ter o controle das rédeas, é crucial que definam claramente como o dinheiro será gerido (contas conjuntas vs. separadas, limites de investimentos de risco, etc.)."
       ],
-      desafiosKarmicos: [
-        "A principal lição desta união envolve o equilíbrio entre liderança e parceria. Quando duas pessoas fortes se unem, o ego pode se tornar um campo de disputa.",
-        "O aprendizado aqui é compreender que liderar não significa controlar. As situações mais desafiadoras surgirão justamente para ensinar cooperação, paciência e humildade.",
-        "A maturidade do casal chega quando ambos compreendem que o sucesso da relação é mais importante do que vencer uma discussão."
+      diaADia: [
+        "Na rotina diária, vocês são um casal 'fazedores'. As manhãs costumam ter um ritmo rápido. Vocês apreciam ter suas próprias agendas e não fazem questão de passar 24 horas por dia grudados. A independência é visível até na forma como gerenciam a casa.",
+        "Quando se trata de lazer, vocês não são os típicos caseiros que passam o fim de semana inteiro assistindo séries (embora gostem disso em doses limitadas). Viagens ativas, esportes, jantares em locais interessantes e atividades que exijam certa energia são mais a cara de vocês.",
+        "A divisão de tarefas domésticas funciona melhor quando está clara e setorizada. Se houver sobreposição, pode haver conflito de microgerenciamento ('não é assim que se arruma isso'). Se cada um tiver a sua 'área de responsabilidade', o dia a dia flui com perfeição."
       ],
-      missaoEspiritual: [
-        "O propósito deste casal é inspirar outras pessoas através do exemplo. Vocês têm o potencial de abrir caminhos não apenas para si mesmos, mas para aqueles que os observam.",
-        "Através da coragem, da iniciativa e da determinação, podem se tornar uma referência para familiares, amigos e para a comunidade ao redor.",
-        "Sua relação pode mostrar que é possível ser forte sem deixar de ser parceiro."
+      conflitos: [
+        "Os gatilhos mais comuns para brigas na Dinâmica 1 envolvem a percepção de desrespeito à autoridade ou à autonomia de um dos parceiros. Microgerenciamento, tentativas de controle de agenda, e conselhos não solicitados são altamente inflamáveis.",
+        "Durante um atrito, a discussão tende a subir de temperatura rapidamente. Como ambos são argumentativos, os conflitos podem se parecer com debates judiciais onde cada um tenta provar irrefutavelmente que está certo.",
+        "A parte crítica dessa relação surge quando os dois decidem não ceder por mero orgulho. O orgulho é o veneno número um deste perfil. Vocês precisam lembrar que num relacionamento não há como um ganhar e o outro perder. Se um de vocês sai da briga humilhado ou silenciado, os dois perderam a conexão."
+      ],
+      pontosCegos: [
+        "O ponto cego mais perigoso desta união é o isolamento em dupla. Como vocês são muito autossuficientes, podem criar uma dinâmica de 'nós contra o mundo', esquecendo de nutrir amizades ou de pedir conselhos externos quando a relação trava.",
+        "Além disso, a obsessão pelo crescimento contínuo pode levar ao 'burnout conjugal'. Vocês podem esquecer como descansar e como apenas 'existir' na presença um do outro sem precisar produzir nada de útil."
+      ],
+      crescimento: [
+        "O propósito comportamental desta união é demonstrar que a individualidade não precisa morrer para que um casal exista. Vocês ensinam as pessoas ao redor (amigos, filhos) o valor da autonomia aliada à parceria ética.",
+        "O crescimento real ocorre quando vocês aprendem a liderar juntos: quando a voz de um é o complemento perfeito para a estratégia do outro, formando uma força indomável."
       ],
       potencialLongoPrazo: [
-        "Quando aprendem a equilibrar independência e parceria, esta união possui enorme potencial de durabilidade.",
-        "Vocês podem envelhecer lado a lado admirando as conquistas que construíram juntos e celebrando cada desafio superado como equipe."
+        "O potencial de sobrevivência desta união a longo prazo é altíssimo, desde que o egoísmo seja trocado pela mentalidade de equipe. Vocês nunca se cansarão um do outro se continuarem a evoluir pessoalmente.",
+        "É o tipo de relacionamento onde, aos 70 anos, vocês olharão para o império (material ou familiar) que construíram e terão um profundo respeito por cada tijolo que assentaram juntos."
       ],
       conselho: [
-        "Transformem a competição em cooperação. A energia que utilizam para disputar espaço pode ser direcionada para construir uma vida extraordinária juntos.",
-        "Lembrem-se: vocês estão no mesmo time. Cada vitória do outro é também uma vitória sua."
+        "Dê espaço ao outro. Se o seu parceiro estiver enfrentando um problema, pergunte 'como posso te apoiar?' em vez de tentar resolver a questão por ele. Lembre-se que vulnerabilidade é a chave para a intimidade real.",
+        "E o mais importante: reservem momentos onde o único objetivo seja não fazer absolutamente nada juntos."
       ],
       mensagemFinal: [
-        "Vocês foram unidos para aprender a liderar sem dominar, amar sem prender e crescer sem deixar o outro para trás.",
-        "O caminho desta relação é de avanço constante. Construam juntos uma história marcada por parceria, superação e conquistas compartilhadas."
+        "Vocês formam uma parceria de águias. Têm visão, força e altitude. Mantenham o respeito intacto, nunca subestimem a força do orgulho e continuem encorajando o voo um do outro. O céu é de vocês."
       ]
     }
   },
-
   2: {
-    title: "Perfil 2: A Harmonia da Sensibilidade e Companheirismo",
-    freeText: "Este é um dos casais mais emocionalmente profundos. A relação é construída sobre a empatia, a compreensão e o apoio mútuo. Vocês não foram unidos para competir, mas para caminhar lado a lado.",
+    title: "Dinâmica 2: Sensibilidade, Parceria e Refúgio Emocional",
+    freeText: "A Dinâmica 2 representa uma profunda conexão empática. Vocês são um porto seguro mútuo num mundo agitado. A relação é pautada no cuidado, na escuta ativa e num nível de companheirismo extremamente raro.",
     sections: {
       visaoGeral: [
-        "Este é um dos casais mais emocionalmente profundos e delicados. A relação é construída sobre a empatia, a compreensão e o apoio mútuo.",
-        "Vocês não foram unidos para competir, mas para caminhar lado a lado. Existe uma sensação de familiaridade e segurança na presença um do outro que poucos casais experimentam.",
-        "O que observamos é que esta é uma parceria onde o coração fala mais alto. As decisões são tomadas considerando os sentimentos de ambos, e o cuidado com o bem-estar do outro é uma prioridade natural.",
-        "A conexão entre vocês tem uma qualidade acolhedora, que faz com que ambos se sintam em casa na presença do parceiro."
+        "Na psicologia, chamamos este tipo de conexão de 'vínculo seguro focado'. A dinâmica do casal 2 é construída primariamente sobre a empatia. Há uma sensibilidade natural na forma como vocês se percebem. Frequentemente, não é necessário o uso de palavras; uma simples mudança no olhar ou na postura é suficiente para que um saiba que o outro teve um dia ruim.",
+        "Este não é um casal cujo centro de gravidade está fora (no trabalho, na ambição desenfreada); o centro de gravidade está no 'nós'. A relação possui um caráter de ninho, de abrigo. Vocês se protegem ativamente das agressividades do mundo exterior.",
+        "Uma característica marcante é a pacificação. A energia da relação é suave. Vocês preferem abrir mão de terem razão em favor de manterem a harmonia do ambiente. Esse nível de cooperação torna a convivência excepcionalmente doce, mas traz o risco de camuflar insatisfações em nome da 'paz a qualquer custo'.",
+        "O sucesso desta união depende da capacidade de vocês normalizarem o conflito. Compreender que discordar não significa desamar é a chave para o amadurecimento emocional profundo dessa dinâmica."
       ],
       atracaoInicial: [
-        "A atração entre vocês costuma surgir de forma gradual, diferente de relações mais impulsivas. Existe uma conexão emocional quase imediata, uma sensação de que vocês já se conhecem há mais tempo do que realmente se conhecem.",
-        "Vocês sentem que podem confiar um no outro desde cedo. A segurança emocional que o outro transmite é um dos maiores fatores de atração.",
-        "Muitas vezes, a relação começa através da amizade, da cumplicidade ou de conversas profundas que revelam uma sintonia natural.",
-        "Não é uma paixão explosiva, mas um reconhecimento tranquilo de que ali existe algo especial."
+        "A atração de vocês provavelmente não começou com jogos de sedução agressivos ou exibições de ego. Ela nasceu do conforto. Desde o primeiro momento, algo no outro pareceu familiar, acolhedor e surpreendentemente seguro.",
+        "A química inicial baseou-se na capacidade de escuta mútua. Vocês provavelmente passaram horas conversando sobre medos, sonhos e vulnerabilidades muito antes de consolidarem o relacionamento em outros níveis.",
+        "O interesse mútuo floresceu na percepção de que 'aqui eu não preciso fingir ser forte o tempo todo'. A atração foi a promessa de descanso e de pertencimento real."
       ],
       compatibilidadeEmocional: [
-        "Este é o ponto mais forte da união. Existe grande capacidade de compreender os sentimentos um do outro sem necessidade de longas explicações.",
-        "Vocês percebem mudanças de humor, preocupações silenciosas e necessidades emocionais de forma quase intuitiva. Essa sensibilidade é um presente raro.",
-        "Porém, justamente por serem tão sensíveis, pequenas mágoas podem ser acumuladas silenciosamente. Um pode deixar de expressar o que sente para não preocupar ou magoar o outro.",
-        "A comunicação emocional precisa ser transparente. O silêncio que protege pode, com o tempo, se transformar em distância."
+        "Este é, emocionalmente, o núcleo mais compatível possível. A empatia que permeia a união faz com que exista validação constante dos sentimentos de ambos. Vocês são aquele casal que se abraça apertado sem motivo aparente.",
+        "A fraqueza dessa altíssima conexão emocional é a tendência à simbiose (ou codependência). Se um está triste, o outro inevitavelmente afunda junto. A linha que separa 'eu' de 'você' pode se tornar tão fina que a individualidade corre risco de desaparecer.",
+        "O maior ganho de compatibilidade acontecerá quando vocês aprenderem a diferenciação emocional: a habilidade de ser extremamente próximo ao parceiro, de oferecer suporte, mas não assumir para si a dor ou a angústia que pertence apenas a ele. Essa blindagem empática salvará vocês do esgotamento."
       ],
       comunicacao: [
-        "A conversa tende a ser respeitosa, diplomática e cuidadosa. Vocês geralmente evitam conflitos desnecessários e preferem manter a harmonia.",
-        "O perigo está justamente aí: evitar discussões importantes para preservar uma falsa sensação de paz. A verdadeira harmonia nasce da sinceridade, não da omissão.",
-        "Aprender a discordar com respeito, sem medo de desagradar, é um dos grandes amadurecimentos deste casal."
+        "A comunicação na Dinâmica 2 é rica em sutilezas. Vocês se preocupam genuinamente em não ferir o outro. Palavras são escolhidas com cuidado, o tom de voz costuma ser equilibrado e há muito espaço para a expressão de carinho.",
+        "O perigo se encontra no que não é dito. Por pavor de magoar o parceiro ou de iniciar uma briga, vocês podem adotar o hábito nefasto da evitação. Um engole um comportamento que o desagrada, depois o outro engole uma falha, e o silêncio se torna pesado de coisas não ditas.",
+        "O aprendizado fundamental de comunicação para vocês é a 'franqueza compassiva'. Aprender a colocar o desconforto na mesa de forma madura. Dizer a verdade com amor é a mais alta forma de diplomacia."
       ],
       amorIntimidade: [
-        "A intimidade é marcada por carinho, afeto e conexão emocional profunda. O aspecto físico se fortalece através da confiança e da proximidade emocional, não o contrário.",
-        "Existe uma forte necessidade de demonstrações de amor, atenção e presença. Pequenos gestos — um abraço, uma palavra gentil, um cuidado inesperado — possuem enorme valor.",
-        "Para este casal, o romance está nos detalhes. A ausência de demonstrações de afeto pode ser sentida como um sinal de distanciamento, mesmo quando não é.",
-        "Cultivar momentos de conexão diária é essencial para manter a chama acesa."
+        "A intimidade entre vocês é pautada na conexão afetiva absoluta. Para este perfil de casal, não existe intimidade física satisfatória sem que o terreno emocional esteja perfeitamente afofado. O toque é carinhoso, presente e carrega muito significado.",
+        "O romantismo não é um evento de aniversário, é algo orgânico no cotidiano (um café levado na cama, um bilhete, o simples andar de mãos dadas).",
+        "A manutenção da paixão exige apenas que não caiam numa rotina puramente 'fraternal'. Como vocês se tornam muito amigos, quase irmãos de alma, é necessário apimentar o cotidiano com saídas, surpresas e momentos voltados apenas à polaridade romântica e sexual."
       ],
       vidaFinanceira: [
-        "Embora não seja uma combinação voltada para grandes ambições financeiras, existe excelente potencial para estabilidade.",
-        "Vocês costumam tomar decisões pensando na segurança da família e do relacionamento, priorizando qualidade de vida em vez de status ou acúmulo.",
-        "O equilíbrio financeiro vem naturalmente quando ambos estão alinhados sobre o que realmente importa."
+        "Financeiramente, vocês preferem a segurança ao risco desmedido. As decisões são tomadas sempre em conjunto, priorizando o conforto do lar, a segurança no longo prazo e o bem-estar familiar.",
+        "Podem, contudo, hesitar excessivamente diante de oportunidades de investimento ou mudanças profissionais por medo de desestabilizarem a paz do momento. Um pouco de arrojo e de planejamento para além do básico pode trazer grandes benefícios materiais."
       ],
-      desafiosKarmicos: [
-        "A principal lição deste casal envolve aprender a estabelecer limites saudáveis. Existe uma tendência a sacrificar as próprias necessidades em favor do parceiro.",
-        "O aprendizado aqui é que amar não significa abrir mão de si mesmo. A relação mais saudável é aquela onde ambos podem ser inteiros, não metades que se completam.",
-        "Dizer 'não' quando necessário não é um ato de egoísmo, mas de amor próprio — e esse amor fortalece a relação."
+      diaADia: [
+        "O estilo de vida de vocês é altamente focado na harmonia e no conforto. Se o mundo lá fora é guerra, a casa de vocês precisa ser um templo de paz. A decoração, a comida, a organização... tudo visa o conforto e o acolhimento.",
+        "Na rotina, preferem muito mais programas íntimos (assistir séries sob o cobertor, jantares caseiros, receber poucos e bons amigos) do que eventos barulhentos ou badalação. Viagens para locais tranquilos e de contato com a natureza ou com profundo apelo romântico são as favoritas.",
+        "A divisão de tarefas domésticas é geralmente feita de forma justa, pois ambos não suportam ver o parceiro sobrecarregado. O cuidado contínuo pelo ambiente físico reflete o cuidado mental."
       ],
-      missaoEspiritual: [
-        "O propósito deste casal é demonstrar o verdadeiro significado da parceria. Vocês mostram que força também pode existir na gentileza, na paciência e na compreensão.",
-        "Através do exemplo de vocês, muitas pessoas ao redor podem aprender sobre respeito, empatia e o valor de uma relação construída com cuidado.",
-        "Sua contribuição para o mundo é provar que o amor sensível é tão poderoso quanto qualquer outra força."
+      conflitos: [
+        "As brigas, quando ocorrem, raramente envolvem gritaria. O conflito nesta dinâmica costuma se manifestar através de mágoas silenciosas, passividade-agressividade ou distanciamento frio. Vocês tendem a se recolher quando feridos.",
+        "O gatilho principal das brigas é a percepção de negligência emocional. Sentir que o parceiro não percebeu seu esforço ou não validou seu cansaço gera feridas profundas.",
+        "A parte crítica é a dificuldade de virar a página. Por serem sensíveis, pequenas dores podem gerar um banco de ressentimentos. Vocês têm uma memória de elefante para o que machuca. Para limpar isso, o pedido de desculpas precisa vir acompanhado de mudança comportamental visível."
+      ],
+      pontosCegos: [
+        "O ponto cego principal é o sacrifício da própria voz em nome do relacionamento. Um de vocês (ou ambos) pode abrir mão sistematicamente dos seus hobbys, amizades e projetos pessoais só para ficar mais tempo com o parceiro ou evitar chateações.",
+        "Com o passar dos anos, essa anulação gera uma crise de identidade ('quem eu sou sem você?'). Manter uma fatia da sua vida apenas sua é essencial para a saúde a longo prazo."
+      ],
+      crescimento: [
+        "O propósito comportamental desta união é manifestar o amor na sua forma mais pura e cuidadosa. Vocês ensinam empatia ao mundo.",
+        "O crescimento absoluto acontece quando o casal percebe que a força e a doçura podem andar de mãos dadas. Quando vocês se tornam fortes não apenas para aguentar o mundo, mas seguros o suficiente para suportar a discordância sem sentir que a relação acabou."
       ],
       potencialLongoPrazo: [
-        "Poucos casais possuem tanto potencial para relacionamentos duradouros quanto este. Quando bem trabalhada, esta união pode atravessar décadas mantendo carinho, respeito e cumplicidade.",
-        "O tempo, para vocês, é um aliado: quanto mais convivem, mais a conexão se aprofunda e mais a confiança se solidifica."
+        "Excepcionalmente alto. Vocês têm as bases exatas que geriatras e psicólogos encontram em casais que chegam felizes aos casamentos de ouro.",
+        "A confiança emocional e o nível de entrelaçamento da vida cotidiana fazem de vocês parceiros para a eternidade, desde que aprendam a não acumular poeira debaixo do tapete."
       ],
       conselho: [
-        "Não tenham medo das conversas difíceis. A honestidade emocional fortalece aquilo que já é naturalmente harmonioso.",
-        "Lembrem-se de que cuidar do outro inclui também permitir que o outro cuide de você. Vocês merecem receber tanto quanto dão."
+        "A paz forçada é apenas uma guerra sendo adiada. Acostumem-se a ter conversas desconfortáveis com regularidade. Tragam as pequenas insatisfações à luz imediatamente antes que se tornem amarguras.",
+        "Protejam suas individualidades. O relacionamento fica muito mais interessante quando cada um tem novidades para contar no fim do dia."
       ],
       mensagemFinal: [
-        "Vocês foram unidos para aprender que o amor verdadeiro não é sobre controlar ou conquistar, mas sobre apoiar, compreender e crescer juntos.",
-        "Que a delicadeza de vocês nunca seja confundida com fraqueza, pois é justamente ela que faz desta relação um porto seguro para ambos."
+        "O nível de cuidado que vocês oferecem um ao outro é um antídoto para a dureza da vida moderna. Continuem protegendo essa sensibilidade, mas vistam também uma armadura de maturidade para que a relação nunca lhes custe a própria identidade."
       ]
     }
   },
-
   3: {
-    title: "Perfil 3: O Brilho da Comunicação e Criatividade",
-    freeText: "Este é um dos casais mais alegres e criativos. A relação é marcada pela leveza, pela diversão e pelo desejo de viver intensamente cada momento. Vocês trazem cor para a vida um do outro e raramente se deixam cair na monotonia.",
+    title: "Dinâmica 3: Comunicação, Brilho e Entusiasmo Compartilhado",
+    freeText: "A Dinâmica 3 representa um casal radiante. Vocês se uniram pelo entusiasmo, pelo fascínio intelectual e pela alegria contagiante. É uma relação alicerçada no diálogo interminável e na recusa em levar uma vida monótona ou descolorida.",
     sections: {
       visaoGeral: [
-        "Este é um dos casais mais alegres, criativos e expressivos. A relação é marcada pela leveza, pela diversão e pelo entusiasmo com que vivem cada momento.",
-        "Vocês trazem cor para a vida um do outro. A convivência raramente é monótona, e existe uma necessidade constante de novidades, experiências e estímulos.",
-        "Uma característica marcante desta relação é a capacidade de encontrar prazer nas pequenas coisas e de transformar o cotidiano em algo especial.",
-        "O que observamos é que este casal tem uma energia contagiante — pessoas ao redor gostam de estar perto de vocês porque sentem essa vitalidade."
+        "Do ponto de vista comportamental, este é o casal das infinitas possibilidades. O padrão primário da Dinâmica 3 é a extroversão e o constante estímulo. A relação atua como uma usina de criatividade. Vocês não param de falar, não param de pensar em projetos (mesmo que nunca os executem) e possuem uma habilidade singular de ver o lado positivo das coisas.",
+        "Uma característica fundamental é que a amizade é tão importante quanto o romance. Vocês são verdadeiramente 'melhores amigos'. Gostam da companhia do outro para coisas banais simplesmente porque qualquer ida ao mercado com o parceiro se torna divertida ou acaba em alguma boa história.",
+        "A comunicação é o pilar de sustentação e, ao mesmo tempo, a maior área de risco. O volume de informações trocadas é imenso. Vocês debatem desde filosofia abstrata até o roteiro da série com o mesmo fervor.",
+        "A sombra dessa dinâmica, no entanto, é o excesso de estímulos que mascara a superficialidade. Vocês podem usar o riso e a diversão como mecanismo de fuga sistemática para não enfrentarem as camadas mais densas e difíceis da vida a dois. O sucesso a longo prazo depende de conseguirem equilibrar o riso com a profundidade emocional realista."
       ],
       atracaoInicial: [
-        "A conexão geralmente nasce através da conversa. O humor, a inteligência e a capacidade de comunicação são fatores extremamente importantes na atração inicial.",
-        "Vocês se sentem atraídos pela personalidade vibrante um do outro, pela maneira como cada um vê o mundo e pela facilidade com que a troca de ideias acontece.",
-        "A relação costuma começar cercada de risadas, diversão e entusiasmo. Existe uma sensação de que a vida fica mais leve quando estão juntos.",
-        "Não é raro que amigos e familiares comentem sobre a química visível entre vocês desde o primeiro momento."
+        "O que chamou a atenção no início não foi o físico ou o status; foi o repertório. A atração nasceu da faísca intelectual. Uma resposta espirituosa, uma observação sagaz ou o fato de compartilharem referências e um humor muito peculiar e veloz.",
+        "O flerte de vocês foi dominado por trocas verbais, mensagens cheias de química e uma curiosidade magnética. A sensação nos primeiros meses era a de ter encontrado alguém que falava exatamente o mesmo idioma do seu cérebro.",
+        "O riso foi a grande cola inicial. Quem faz o outro rir de forma sincera consegue derrubar qualquer defesa emocional."
       ],
       compatibilidadeEmocional: [
-        "Existe facilidade para expressar sentimentos e emoções. Vocês gostam de conversar sobre praticamente tudo e encontram prazer na troca constante de ideias.",
-        "O desafio aparece quando emoções mais profundas ou dolorosas precisam ser enfrentadas. Em alguns momentos, podem usar o humor ou a distração como mecanismo para evitar a vulnerabilidade.",
-        "A maturidade emocional deste casal cresce quando ambos aprendem que a leveza pode coexistir com a profundidade.",
-        "Criar espaço para conversas sérias sem perder a alegria que os une é o grande equilíbrio a ser buscado."
+        "A compatibilidade emocional de vocês é alta no que diz respeito ao companheirismo e à leveza. Nenhum de vocês gosta de pessoas que arrastam correntes ou se vitimizam continuamente. Vocês apoiam o parceiro sendo animadores de torcida.",
+        "Contudo, a grande prova de fogo emocional acontece quando a vida perde a graça. Diante de lutos, crises financeiras graves ou depressões pontuais, essa dinâmica pode entrar em colapso se não aprender a lidar com o silêncio e o peso. Como o natural do casal é a alegria, o sofrimento do outro pode gerar uma sensação de impotência profunda ou uma tentativa desesperada de 'animar' o parceiro em um momento onde ele só precisava chorar acompanhado.",
+        "Saber ficar confortavelmente no escuro com o outro, segurando a barra sem tentar apressar o processo de cura, é a maturidade máxima dessa união."
       ],
       comunicacao: [
-        "Este é o maior ponto forte da união. A comunicação flui naturalmente, e vocês conseguem conversar durante horas sem perceber o tempo passar.",
-        "Quando utilizam essa habilidade para resolver conflitos — em vez de apenas para se divertir — o relacionamento se fortalece enormemente.",
-        "A palavra tem poder para vocês. Usem-na para construir, para curar e para se conectar ainda mais profundamente."
+        "A fluência verbal de vocês é fenomenal. Essa é a ferramenta de ouro do casal. Vocês negociam os termos do relacionamento verbalizando as necessidades claramente.",
+        "O lado negro dessa fluência é a ironia e o sarcasmo. Em momentos de irritação, em vez de agressões brutas, vocês podem usar palavras precisas e afiadas como bisturis para ferir o parceiro. A agressão passiva disfarçada de 'piada' é um comportamento altamente tóxico que deve ser eliminado por vocês.",
+        "Outro cuidado de comunicação é não usar o dom da palavra para enrolar o outro em discussões, saindo ilesos apenas porque têm uma retórica melhor. Honestidade vale mais que argumentação."
       ],
       amorIntimidade: [
-        "O romance é leve, divertido e espontâneo. Existe um forte componente de amizade dentro da relação, e vocês genuinamente gostam da companhia um do outro.",
-        "A intimidade é alimentada pela admiração intelectual e pela conexão emocional. A paixão permanece viva enquanto houver novidade, criatividade e desejo de surpreender.",
-        "O risco está na rotina: quando a relação se torna previsível demais, o interesse pode diminuir. Manter a criatividade viva é essencial.",
-        "Planejar momentos especiais, viagens ou mesmo noites temáticas pode fazer uma grande diferença."
+        "A vida íntima é lúdica, exploratória e, assim como todo o resto, baseada em comunicação. O estímulo mental (falar o que sente, o que quer, as fantasias) costuma ser o grande catalisador da excitação física.",
+        "A paixão requer novidade. A rotina sexual estritamente programada é o pior inimigo desse casal. Vocês precisam de elementos de surpresa, quebra de padrões e, claro, romance alegre.",
+        "A manutenção da intimidade depende intrinsecamente do estado de amizade. Se a amizade esfria por mágoas, o desejo sexual entre vocês costuma evaporar junto."
       ],
       vidaFinanceira: [
-        "O casal possui talento para áreas criativas, comunicação, marketing, vendas, entretenimento e empreendedorismo. Podem prosperar profissionalmente unindo essas habilidades.",
-        "Porém, existe tendência a gastar impulsivamente ou priorizar prazeres imediatos em detrimento de metas de longo prazo.",
-        "Aprender organização financeira será essencial para transformar o potencial criativo em estabilidade duradoura."
+        "Dois perfis altamente criativos juntos têm a fórmula perfeita para gerar oportunidades de negócios, contatos e renda. Vocês são 'vendáveis' e costumam construir redes de networking formidáveis.",
+        "O desafio financeiro da Dinâmica 3 é puramente o foco e a disciplina. Vocês podem tender à dispersão: começam projetos incríveis mas abandonam antes da colheita porque uma nova ideia pareceu mais atrativa. O uso indiscriminado do dinheiro para o prazer imediato (viagens não planejadas, excesso de saídas) requer, urgentemente, o estabelecimento de um orçamento básico."
       ],
-      desafiosKarmicos: [
-        "A principal lição desta união envolve disciplina e foco. Vocês vieram aprender que sonhos precisam ser acompanhados de planejamento para se tornarem realidade.",
-        "Sem estrutura, existe o risco de dispersão e instabilidade. O aprendizado está em equilibrar a espontaneidade com a responsabilidade.",
-        "A diversão é importante, mas a maturidade vem quando vocês aprendem a honrar também os compromissos e as metas que estabelecem juntos."
+      diaADia: [
+        "Na rotina, a estagnação é o inimigo público número um. O dia a dia de vocês raramente é monótono e programado na ponta do lápis. Existe sempre um espaço para o improviso.",
+        "O estilo de vida do casal reflete extroversão. Preferem ter a agenda cheia. Sair para comer, frequentar eventos culturais, viagens curtas de fim de semana, socializar com diferentes grupos de amigos. A casa de vocês costuma ser o ponto de encontro da turma e possui uma energia 'viva'.",
+        "A dificuldade de rotina aparece nas questões entediantes de administração da casa (limpeza, contas a pagar, burocracias). Muitas vezes o casal deixa tudo para a última hora. Definir dias fixos para a 'administração burocrática da vida' evitará pequenas crises."
       ],
-      missaoEspiritual: [
-        "O propósito deste casal é espalhar alegria e inspirar as pessoas ao redor. Vocês têm uma capacidade natural de iluminar ambientes e aproximar pessoas.",
-        "Através da criatividade, da comunicação e da energia positiva de vocês, muitos podem se sentir encorajados a viver com mais leveza e autenticidade.",
-        "Sua relação é um lembrete de que o amor também pode ser divertido, sem perder sua profundidade."
+      conflitos: [
+        "As brigas entre vocês escalam verbalmente de forma rápida, e a inteligência de ambos faz com que não faltem argumentos. O gatilho costuma ser a percepção de que o outro não está ouvindo, está sendo teimoso, ou está invalidando a sua ideia.",
+        "O lado negativo dos conflitos é que vocês podem usar manobras de distração na fala para não admitir que erraram, ou podem adotar posturas infantis e birrentas. Muitas vezes a briga termina com os dois exaustos mentalmente por terem argumentado durante 4 horas seguidas sobre detalhes mínimos.",
+        "A solução é a objetividade no atrito. Foco no problema primário e suspensão total do uso do sarcasmo ou ironia quando os nervos estão à flor da pele."
+      ],
+      pontosCegos: [
+        "O ponto cego crítico deste relacionamento é a imaturidade diante de temas que exigem persistência árida. Evitar encarar dívidas, evitar sentar para planejar o futuro financeiro ou evitar colocar um ponto final em padrões prejudiciais usando o bom humor como desculpa.",
+        "Outro risco severo é a dispersão energética. Querer viver tudo ao mesmo tempo pode resultar em não construir nada de sólido e profundo, vivendo sempre no limite do esgotamento superficial."
+      ],
+      crescimento: [
+        "O propósito comportamental desta união é ser um farol de alegria, inovação e pensamento ágil para as pessoas ao redor. Vocês são criadores natos.",
+        "O crescimento acontece quando o casal une a criatividade e a amizade inabalável que possuem à disciplina e à profundidade emocional. Rir juntos nas tempestades não como negação do problema, mas como resiliência madura."
       ],
       potencialLongoPrazo: [
-        "Quando conseguem equilibrar diversão e responsabilidade, esta união possui enorme potencial de felicidade duradoura.",
-        "O relacionamento permanece jovem mesmo com o passar dos anos, porque vocês têm a capacidade de se reinventar e de encontrar alegria nas pequenas coisas."
+        "Muito favorável, especialmente porque a amizade intelectual e o fascínio tendem a não envelhecer com o corpo físico.",
+        "Se conseguirem suportar a monotonia das fases onde a vida não é nada brilhante, chegarão à velhice como aquele casal jovial de 80 anos que ainda prega peças um no outro."
       ],
       conselho: [
-        "Não utilizem a leveza para fugir dos desafios. Encarem os momentos difíceis com a mesma criatividade que aplicam nos momentos bons.",
-        "A maturidade emocional não elimina a diversão — pelo contrário, permite que o brilho da relação se torne ainda mais forte e verdadeiro."
+        "Desenvolvam âncoras de rotina para que o relacionamento não fique flutuando no ar o tempo todo. Tenham responsabilidades inegociáveis um com o outro.",
+        "Lembrem-se que nem toda crise se resolve na mesma noite com uma boa argumentação. Às vezes, as emoções apenas precisam do tempo lento do relógio para decantarem. Respeitem o silêncio."
       ],
       mensagemFinal: [
-        "Vocês foram unidos para mostrar que o amor também pode ser leve, divertido e inspirador.",
-        "Juntos, possuem a capacidade de transformar a vida cotidiana em uma jornada cheia de significado, alegria e crescimento compartilhado."
+        "Vocês possuem uma sintonia mental brilhante e a vida do lado de vocês não é para quem tem coração fraco. Mantenham o humor como pilar de luz, mas não tenham medo de descer as escadas da intimidade profunda e, por vezes, silenciosa. Vocês são o par perfeito para escreverem juntos a mais cativante das histórias."
       ]
     }
   },
-
   4: {
-    title: "Perfil 4: A Solidez da Estabilidade e Construção",
-    freeText: "Este é um dos casais mais sólidos e confiáveis. A relação é construída sobre bases reais, comprometimento genuíno e desejo sincero de construir algo duradouro. Não é um amor de impulsos passageiros, mas de dedicação diária.",
+    title: "Dinâmica 4: Construção, Estabilidade e Valores Inegociáveis",
+    freeText: "A Dinâmica 4 representa os construtores de legados. A relação de vocês não vive de momentos efêmeros de empolgação emocional; ela se sustenta sobre bases reais, pragmatismo brutal e dedicação. É uma união projetada estruturalmente para resistir aos piores invernos.",
     sections: {
       visaoGeral: [
-        "Este é um dos casais mais sólidos e confiáveis. A relação é construída sobre bases reais, comprometimento genuíno e desejo sincero de construir algo duradouro.",
-        "Não é um relacionamento de impulsos passageiros. Aqui existe seriedade, dedicação e a compreensão de que o amor verdadeiro se constrói dia após dia, com escolhas conscientes.",
-        "Uma característica marcante desta relação é a capacidade de planejar o futuro juntos. Vocês não apenas sonham — vocês constroem.",
-        "O que observamos é que este casal possui tudo o que é necessário para edificar uma vida estável e significativa, desde que cultivem também a leveza e a espontaneidade."
+        "O padrão comportamental que define o Casal 4 é a segurança e o método. Em uma época de amores líquidos e relações descartáveis, vocês representam uma rocha sólida. Psicologicamente, a relação se pauta pela previsibilidade e pela confiança mútua irrestrita. Não há muito espaço para a ambiguidade. Quando vocês decidem estar juntos, é um compromisso assumido com todas as letras.",
+        "A visão de futuro de vocês costuma ser muito convergente. Construir patrimônio, estabelecer uma moradia fixa, organizar a vida familiar, garantir aposentadoria e proteger quem se ama. A gestão do dia a dia é levada a sério.",
+        "Embora essa estrutura forneça a mais valiosa de todas as moedas — a paz de espírito — ela abriga também o maior perigo: a estagnação sistêmica pela rotina excessiva. O relacionamento pode tornar-se uma espécie de 'S.A.' (Sociedade Anônima), onde o casamento funciona primorosamente bem na gestão de contas e obrigações, mas atrofia a paixão pelo excesso de deveres.",
+        "O desafio existencial do casal é agendar, paradoxalmente, a flexibilidade e o lúdico. Aprender a quebrar regras de vez em quando."
       ],
       atracaoInicial: [
-        "A atração entre vocês raramente nasce de forma explosiva. Existe um processo gradual de aproximação, baseado na confiança, no respeito e na admiração pela seriedade um do outro.",
-        "Vocês percebem no parceiro alguém confiável, responsável e com quem é possível planejar o futuro. Essa sensação de segurança é o principal combustível da atração.",
-        "Não é o amor que tira o chão, mas o amor que dá chão. E é exatamente isso que torna a conexão tão especial.",
-        "A relação costuma começar de forma natural, sem pressa, permitindo que a confiança se estabeleça antes que a intimidade se aprofunde."
+        "Vocês não se atraíram por histórias mirabolantes ou promessas vãs. A atração nasceu da percepção de estabilidade, caráter e solidez no outro. Alguém em quem se podia confiar.",
+        "O processo de namoro raramente foi explosivo. Pode ter começado com cautela, observando se os valores batiam, se os planos de futuro eram alinhados e, principalmente, se o discurso do parceiro era comprovado pelas suas atitudes reais ao longo do tempo.",
+        "A química entre vocês é ancorada no respeito. Sentir que o outro 'tem os pés no chão' foi o gatilho magnético primordial."
       ],
       compatibilidadeEmocional: [
-        "Emocionalmente, este casal costuma ser estável e leal. Existe profundo compromisso com o bem-estar mútuo e uma dedicação que inspira segurança.",
-        "O desafio está na dificuldade de expressar emoções com espontaneidade. Ambos tendem a ser reservados quanto aos sentimentos mais profundos, o que pode gerar uma sensação de distância emocional com o tempo.",
-        "Cultivar momentos de abertura e vulnerabilidade é essencial para aprofundar a conexão. Nem tudo precisa ser resolvido — às vezes, precisa apenas ser compartilhado.",
-        "Aprender que demonstrar fragilidade não é fraqueza, mas uma forma de fortalecer a intimidade."
+        "A compatibilidade emocional reside na lealdade férrea. Uma vez que o casal cria seus laços, a dedicação é extrema. Em caso de doenças, desemprego ou crises severas externas, vocês fecham as portas e atuam como uma frente unida imbatível. A sensação de 'estou seguro com essa pessoa' nutre o emocional.",
+        "A vulnerabilidade desta união é o bloqueio expressivo. Pessoas neste perfil sentem as emoções de maneira profunda, mas possuem uma barreira considerável para falar sobre as coisas do coração. Podem se fechar longamente quando magoados, optando pelo silêncio ou por enterrar-se no trabalho.",
+        "A maturidade dessa união exige a criação de rituais semanais para apenas conversar sobre 'como você se sentiu nesta semana', desarmando o lado racional e obrigando-se a visitar o terreno emocional."
       ],
       comunicacao: [
-        "A comunicação é prática, direta e voltada para soluções. Vocês não perdem tempo com rodeios e preferem abordar os problemas de frente.",
-        "O cuidado necessário está em não transformar toda conversa em uma análise racional. Às vezes, o coração precisa falar mais alto do que a razão.",
-        "Reservem espaço para conversas que não tenham objetivo definido — apenas o prazer de se conectar."
+        "A comunicação na Dinâmica 4 é altamente eficaz no que diz respeito às tarefas, cronogramas e responsabilidades vitais. Não há rodeios ou duplos sentidos. O que é dito, é feito.",
+        "A armadilha na comunicação surge quando a linguagem corporativa e diretiva é trazida para a intimidade afetiva. Tratar as pequenas falhas do parceiro como se ele fosse um subordinado que não entregou um relatório, ou cobrar atitudes amorosas com tom de imposição legal. A inflexibilidade na fala endurece a relação.",
+        "Desenvolver um vocabulário que inclua validação empática ('eu entendo o seu ponto e aprecio o que você fez, mas gostaria de tentar de outro modo') será revolucionário para a ternura na comunicação."
       ],
       amorIntimidade: [
-        "A vida íntima pode demorar para se aprofundar, pois ambos precisam de confiança antes de se abrirem completamente. Quando essa confiança está estabelecida, a intimidade é rica, segura e profundamente satisfatória.",
-        "O amor é demonstrado através de atos concretos: cuidar, proteger, prover e estar presente nos momentos difíceis.",
-        "Gestos românticos espontâneos precisam ser cultivados conscientemente. A rotina e a praticidade podem, com o tempo, ofuscar a chama da paixão.",
-        "Surpreender o parceiro com pequenos gestos de afeto é um investimento que traz grandes retornos."
+        "O amor deste casal é devotado. É o clássico amor demonstrado pelo serviço. 'Eu arrumei seu pneu', 'Paguei o seu IPVA para você não se preocupar', 'Preparei a sua marmita'. Atitudes substituem as palavras poéticas.",
+        "A intimidade sexual acompanha o nível de segurança mental e exaustão física do casal. Como vocês tendem a assumir cargas pesadas de responsabilidades de vida e trabalho, o grande limitador do romance não é a falta de amor, mas o puro cansaço de fim do dia.",
+        "É imperativo que a intimidade e as preliminares sejam priorizadas. Para este casal, tirar um fim de semana de folga das responsabilidades apenas para recarregar a bateria a dois, esquecendo que o mundo real existe lá fora, é questão de sobrevivência íntima."
       ],
       vidaFinanceira: [
-        "Esta é uma das combinações mais favoráveis para construção de patrimônio. Vocês possuem disciplina financeira, capacidade de poupança e habilidade para planejar o futuro.",
-        "Preferem segurança a riscos desnecessários, o que é uma qualidade para a estabilidade.",
-        "Com planejamento conjunto, têm tudo para construir um patrimônio sólido e deixar um legado para as próximas gerações."
+        "É aqui que vocês brilham de forma absoluta. O planejamento e a consistência geram a capacidade de acumular riqueza substancial a longo prazo. O foco em tijolos concretos (seja patrimônio físico, investimentos estáveis ou previdência) é um pilar da união.",
+        "A zona de conflito surge apenas se um dos parceiros começar a desrespeitar os acordos orçamentários, ou no extremo oposto, se a ânsia pela estabilidade futura os impedir de usufruir um mínimo do dinheiro no presente, gerando uma privação mesquinha. O equilíbrio entre guardar e viver deve ser a regra."
       ],
-      desafiosKarmicos: [
-        "A principal lição desta união envolve flexibilidade. A rigidez excessiva pode transformar a estabilidade em sufocamento.",
-        "Vocês são desafiados a aprender que as regras existem para servir a relação, não para aprisioná-la. A vida apresentará situações que exigirão adaptação, criatividade e abertura para o novo.",
-        "O verdadeiro equilíbrio está em manter a estrutura sem perder a capacidade de se reinventar."
+      diaADia: [
+        "A rotina de vocês é tão bem orquestrada quanto um relógio suíço. Cada um sabe as suas responsabilidades diárias, e o senso de dever de ambos faz a máquina da casa e do trabalho girar perfeitamente.",
+        "No estilo de vida, vocês valorizam programas previsíveis e de alta qualidade. Gostam da sua casa, do seu conforto, daquele restaurante onde já sabem que o serviço é excelente e não terão surpresas desagradáveis. Não são o perfil de jogar mochilas nas costas para dormir no chão em nome da aventura.",
+        "O peso do dia a dia está na ausência de espontaneidade. Quando as semanas e os meses se tornam idênticos e o foco na 'produtividade' e no 'dever' dita todas as horas do dia, a relação fica seca."
       ],
-      missaoEspiritual: [
-        "O propósito deste casal é demonstrar que o amor verdadeiro se manifesta no cotidiano. A grandeza de uma relação não está apenas nos momentos extraordinários, mas na consistência, na presença e no cuidado diário.",
-        "Vocês são um exemplo de que o comprometimento é uma das formas mais poderosas de amor.",
-        "Através da estabilidade que constroem juntos, criam um ambiente seguro onde todos ao redor podem florescer."
+      conflitos: [
+        "Os gatilhos para as brigas envolvem percepções de irresponsabilidade, mudanças de planos em cima da hora que desestruturam a rotina, quebra de acordos ou quando um sente que está carregando as pedras da casa sozinho.",
+        "Nos embates, a postura costuma ser reativa e muito racionalista. Ambos apresentam o seu conjunto de 'provas' da discussão, raramente admitindo culpa. O silêncio punitivo ('tratamento de gelo') e o distanciamento físico são comuns quando não há acordo.",
+        "A parte mais crítica dessa relação é o perigo de a inflexibilidade gerar o congelamento da união. Vocês precisam quebrar a teimosia lembrando do objetivo principal: não é vencer a briga, é fazer o relacionamento funcionar novamente."
+      ],
+      pontosCegos: [
+        "O principal ponto cego é acreditar que as planilhas financeiras e as tarefas domésticas resolvidas representam um casamento saudável. Um casamento seguro e estruturado não significa um casamento preenchido de vitalidade emocional.",
+        "Outro risco severo é o enrijecimento. A dificuldade pavorosa de se adaptar quando a vida traz variáveis incontroláveis (desemprego, perdas, mudanças de país) que quebram o planejamento que fizeram."
+      ],
+      crescimento: [
+        "O propósito comportamental deste relacionamento é servir de fundação na vida das pessoas ao redor. Vocês serão frequentemente chamados a amparar familiares e amigos, e a sua união cria a estrutura para um legado geracional impecável.",
+        "O crescimento acontece de forma bela quando o casal, tendo garantido os alicerces, se dá permissão incondicional para ser flexível e aproveitar as colheitas do seu duro trabalho sem nenhuma culpa."
       ],
       potencialLongoPrazo: [
-        "Poucos casais possuem tanto potencial de longevidade quanto este. Vocês são o tipo de casal que envelhece junto, que atravessa crises sem perder a essência da parceria.",
-        "Com o tempo, a união se torna cada vez mais profunda, rica em histórias compartilhadas e conquistas construídas a quatro mãos."
+        "É a dinâmica com um dos mais altos potenciais de durabilidade, quase inquebrável, visto que o compromisso de vocês com a instituição familiar é levado muito a sério.",
+        "Se regarem a união com os fertilizantes do afeto diário, da leveza de um vinho sem hora marcada e de férias relaxantes longe do controle de tudo, estarão juntos e sólidos até o último capítulo."
       ],
       conselho: [
-        "Reservem tempo para o romance espontâneo. A estabilidade é um presente, mas o amor também precisa de leveza, surpresas e momentos de pura alegria.",
-        "Não deixem que a rotina apague o desejo. Lembrem-se de que a segurança e a paixão podem — e devem — coexistir."
+        "Cultivem a doçura e a vulnerabilidade. Lembrem-se que vocês não são sócios de uma empresa, são parceiros amorosos de vida. Demonstrem o amor em palavras e carinhos sem nenhum motivo prático.",
+        "Forcem-se a sair da zona de conforto rotineira e abracem a surpresa com mais naturalidade."
       ],
       mensagemFinal: [
-        "Vocês foram unidos para construir. Construir uma família, um lar, uma vida e um legado.",
-        "A força desta relação está na capacidade de permanecer, de continuar escolhendo um ao outro todos os dias. Este é o amor que resiste ao tempo."
+        "Poucos no mundo conseguem a consistência e o respeito absoluto que vocês possuem. Essa união é uma construção majestosa; mas não esqueçam que até os prédios mais fortes precisam de decorações belas e luz nas janelas. Enfeitem a vida de vocês com romantismo e flexibilidade, e terão o melhor de todos os mundos possíveis."
       ]
     }
   },
-
   5: {
-    title: "Perfil 5: A Paixão da Liberdade e Aventura",
-    freeText: "Este é um dos casais mais intensos e fascinantes. A relação é marcada pelo movimento, pela paixão e pelo desejo constante de descobrir o novo. Não é um relacionamento para quem busca acomodação — é uma aventura contínua vivida a dois.",
+    title: "Dinâmica 5: Movimento, Aventura e Libertação das Amarras",
+    freeText: "A Dinâmica 5 representa um casal cujo código interno é a experimentação. Vocês foram unidos não para fincar raízes profundas no mesmo lugar pela eternidade, mas para caminharem e descobrirem o mundo juntos. O pior pesadelo desta união seria uma rotina burocrática.",
     sections: {
       visaoGeral: [
-        "Este é um dos casais mais intensos e fascinantes. Não é uma relação comum — não permite estagnação, monotonia ou acomodação.",
-        "Existe entre vocês uma energia que impulsiona constantemente em direção ao novo, ao desconhecido e ao emocionante. A vida a dois é uma aventura contínua.",
-        "Uma característica marcante desta relação é a capacidade de se reinventar e de encontrar entusiasmo nas experiências compartilhadas.",
-        "O que observamos é que este casal nunca para de evoluir. Cada fase da relação traz descobertas, e o tédio raramente encontra espaço."
+        "O perfil psicológico desta relação é fortemente marcado pela busca constante de dopamina emocional e estímulo. É o casal que se reconfigura constantemente. Vocês abominam o controle; não funcionam com regras rígidas de casamento tradicionais. A autonomia e a necessidade de sentir o vento no rosto são a base de ambos.",
+        "Esta é uma dinâmica magnética. A química é palpável e a capacidade de adaptação às intempéries da vida é formidável. Quando perdem algo material, quando um é demitido ou precisam mudar de cidade repentinamente, vocês simplesmente enxergam nisso uma nova oportunidade. A resiliência pela flexibilidade é o maior poder de vocês.",
+        "No entanto, o risco central da Dinâmica 5 é a síndrome da perna inquieta relacional. A aversão ao tédio pode sabotar fases do relacionamento que necessitam da estabilidade madura e da monotonia (como a construção patrimonial lenta e contínua). Se não há fogo queimando todo dia, pode surgir a sensação equivocada de que o amor acabou.",
+        "Para que essa paixão frenética não imploda a longo prazo, o casal precisará dominar a arte de criar âncoras na liberdade. Descobrir que construir consistência em projetos paralelos pode ser tão excitante quanto a novidade."
       ],
       atracaoInicial: [
-        "A atração entre vocês é quase imediata e muito difícil de ignorar. Existe magnetismo, fascínio e uma química que funciona desde o primeiro contato.",
-        "Vocês se sentem atraídos pelo mistério, pela personalidade multifacetada e pela sensação de que, ao lado do outro, a vida se torna mais intensa.",
-        "A relação costuma começar de forma inesperada — muitas vezes em situações inusitadas, durante viagens ou experiências fora da rotina.",
-        "Desde o início, fica claro que esta não será uma relação comum. E é justamente isso que torna a conexão tão eletrizante."
+        "A atração inicial, como uma explosão num filme, foi baseada na eletricidade e no mistério. Vocês viram um no outro aquele espírito livre que pouca gente ousa assumir.",
+        "Provavelmente houve uma forte carga sexual e uma conexão intelectual rápida focada nas visões nada ortodoxas do mundo e de relacionamento.",
+        "A química floresceu sobre a promessa implícita: 'Nós não precisamos nos algemar um ao outro, e exatamente por isso queremos ficar perto'. Uma união não aprisionadora gerou um desejo profundo de entrega."
       ],
       compatibilidadeEmocional: [
-        "Emocionalmente, esta é uma união complexa e apaixonante. Ambos possuem grande necessidade de liberdade e independência.",
-        "O amor entre vocês é genuíno, mas pode oscilar entre momentos de intensa conexão e períodos de distanciamento. Isso não é necessariamente um problema — é o ritmo natural de vocês.",
-        "O segredo está em compreender que a liberdade não é o oposto do amor, mas sim uma de suas expressões mais saudáveis.",
-        "Respeitar o espaço individual de cada um será fundamental para que a união prospere sem sufocar a essência de ninguém."
+        "Emocionalmente, vocês se entendem muito bem na questão de espaço. Quando um de vocês precisa respirar e ficar isolado no seu mundo, ou sair com os próprios amigos, o outro entende porque tem exatamente a mesma necessidade. A não-codependência é maravilhosa.",
+        "O gargalo da compatibilidade aparece na profundidade de comprometimento afetivo frente ao cansaço ou nas fases onde o parceiro requer cuidados lentos. Como vocês são muito velozes em ir para o próximo capítulo de vida, a estabilidade de apenas segurar a mão e lidar com lutos, dores ou fragilidades de longo prazo requer um treinamento de paciência brutal.",
+        "Aprender a suportar a rotina emocional, aceitando que o amor é uma jornada com planícies entediantes, fará de vocês invencíveis."
       ],
       comunicacao: [
-        "A comunicação é estimulante, dinâmica e cheia de trocas intelectuais. Vocês possuem opiniões fortes, e debates acalorados fazem parte do relacionamento.",
-        "Quando canalizados de forma saudável, esses momentos de discussão fortalecem o vínculo. O cuidado necessário é não transformar a busca por estímulos externos em fuga das conversas emocionais importantes."
+        "A comunicação de vocês é rápida, expressiva, ousada e muito adaptável a novos temas.",
+        "O perigo mora na evasão. Diante de DRs (Discussões de Relacionamento) pesadas sobre limites, futuro e finanças, um de vocês pode simplesmente se esgueirar porta afora, mudar de assunto, usar charme ou sair do ambiente com raiva porque detesta se sentir cobrado ou inquirido.",
+        "Vocês precisam parar de usar as manobras evasivas. Sentem-se frente a frente sem o uso de celulares e tratem o conflito até o final, mesmo que isso os irrite profundamente. Resolver o que não é empolgante é vital."
       ],
       amorIntimidade: [
-        "A vida íntima deste casal é naturalmente intensa, sensual e cheia de energia. Existe forte atração física que se renova constantemente.",
-        "A paixão permanece acesa quando ambos continuam surpreendendo um ao outro. Viagens juntos, novas experiências e sair da rotina regularmente são essenciais.",
-        "O risco está na previsibilidade. Quando a relação se torna rotineira demais, um dos dois pode buscar estímulos fora.",
-        "Manter o elemento surpresa vivo é um dos maiores segredos deste casal."
+        "A vida íntima deste casal atinge picos de intensidade e exploração altíssimos. O apetite por novas experiências, cenários ou brincadeiras mantém o desejo vívido por muito mais tempo do que a maioria dos casais.",
+        "O romantismo para o 5 raramente é o jantar padrão à luz de velas; ele é encontrado numa viagem exótica de surpresa, num encontro num lugar inusitado, numa quebra da agenda no meio da semana de trabalho.",
+        "Para manter o sexo e a paixão no ápice por décadas, este casal não pode deixar a agenda profissional pasteurizar a agenda afetiva."
       ],
       vidaFinanceira: [
-        "Financeiramente, esta combinação traz tanto oportunidades quanto desafios. A mente criativa e adaptável de ambos gera facilidade para encontrar novas fontes de renda.",
-        "Porém, existe tendência a gastar impulsivamente em experiências, viagens e novidades. Criar uma reserva financeira sólida será o grande equilíbrio a ser buscado.",
-        "O ideal é unir a capacidade de ganhar dinheiro com uma disciplina mínima de planejamento."
+        "Ambos possuem grande agilidade intelectual para identificar oportunidades. Muitas vezes os ganhos vêm de várias frentes (trabalhos independentes, comércio, tecnologias, carreiras não convencionais).",
+        "O problema crônico reside na impulsividade dos gastos. O 'eu mereço viver hoje' grita mais alto que a planilha do mês que vem. Vocês adoram experiências, viagens e prazeres rápidos. Se não criarem um sistema rígido de aporte financeiro automático de parte do que ganham, podem gerar dinheiro por anos e olhar para trás sem ter construído um patrimônio sólido."
       ],
-      desafiosKarmicos: [
-        "A principal lição desta união envolve comprometimento. A energia de vocês tende a buscar sempre o próximo patamar, o que pode gerar instabilidade se não houver maturidade emocional.",
-        "O aprendizado está em compreender que a verdadeira liberdade não é fugir do compromisso, mas construir uma relação tão rica que a escolha de permanecer se torna natural.",
-        "O amadurecimento vem quando vocês descobrem que estar juntos não limita a liberdade de ninguém — pelo contrário, a amplia."
+      diaADia: [
+        "A rotina de vocês é definida pela ausência dela. Os fins de semana dificilmente seguem um roteiro pré-fabricado. Estarão explorando um novo bairro hoje e trancados jogando videogame no amanhã.",
+        "Gostam de estar na rua, apreciam a liberdade de ir e vir e detestam planejar os detalhes insignificantes do cotidiano.",
+        "A bagunça na dinâmica das obrigações da casa pode gerar atritos pontuais, onde a pia fica cheia ou a conta não foi paga simplesmente porque ambos estavam muito absortos vivendo as próprias experiências ou trabalhando."
       ],
-      missaoEspiritual: [
-        "O propósito deste casal é expandir horizontes — os próprios e os das pessoas ao redor. Vocês têm a capacidade de se transformar mutuamente de maneiras profundas.",
-        "Através das experiências vividas juntos, ambos crescem e levam essa sabedoria para todas as áreas da vida.",
-        "A relação de vocês é uma prova de que é possível amar intensamente sem perder a individualidade."
+      conflitos: [
+        "Os gatilhos máximos de atrito surgem da percepção de controle, cerceamento de liberdade e cobranças exaustivas sobre horários, ou ciúmes infundados. Nada ofende mais essa dinâmica que a sensação de ter a própria palavra desconfiada por paranoias parceiras.",
+        "Em discussões, o tom pode se elevar rapidamente. Como há velocidade de raciocínio, vocês apontam as falhas do parceiro com precisão milimétrica. Podem ser ácidos e não têm problema algum em usar a tática de ir embora fisicamente para cortar o assunto no meio.",
+        "O lado negro do conflito é que a repetição contínua da briga pode esvaziar rapidamente o desejo. Como ambos não temem a mudança, se a relação parecer ter se tornado um fardo chato, o botão de ejeção fica tentador. Vocês precisam manter o engajamento na solução."
+      ],
+      pontosCegos: [
+        "Acreditarem que o amor genuíno e a intimidade andam de mãos dadas apenas com a adrenalina e o frio na barriga contínuos. Confundirem a fase da rotina natural e essencial de construção com o 'fim do amor'.",
+        "A tendência grave a empurrar com a barriga problemas e responsabilidades entediantes achando que a vida vai se ajustar sozinha sem plano de ação."
+      ],
+      crescimento: [
+        "O propósito comportamental deste casal é desestruturar velhos padrões perante a sociedade, amigos e família. Vocês mostram que é possível viver uma vida plena, feliz e conectada sem assinar em baixo dos estereótipos limitantes do 'relacionamento padrão'.",
+        "A evolução desta união é quando percebem que o maior ato de liberdade e ousadia que existe no mundo é a decisão de se comprometer incondicionalmente a um grande amor diário."
       ],
       potencialLongoPrazo: [
-        "O potencial de longo prazo depende diretamente da maturidade com que ambos lidam com a necessidade de liberdade.",
-        "Quando encontram o equilíbrio entre independência e parceria, constroem uma relação extraordinariamente rica e estimulante — daquelas que, aos 60 anos, ainda estão planejando a próxima aventura juntos."
+        "Bastante favorável se a necessidade de mudança e crescimento for aplicada JUNTOS e com respeito à evolução um do outro. Vocês estarão casados mas sempre em um 'novo relacionamento', pois reinventarão os acordos da união diversas vezes na vida.",
+        "O tédio os separa, mas se garantirem o estímulo um ao outro, vocês serão eternamente namorados independentes."
       ],
       conselho: [
-        "Criem rituais de reconexão. Mesmo que a vida seja agitada, reservem momentos exclusivos para cultivar a intimidade e a cumplicidade.",
-        "Lembrem-se: a aventura mais importante da vida de vocês é a que vivem juntos. Não deixem que a busca pelo próximo estímulo os afaste do que já construíram."
+        "Abram as asas, mas criem raízes suficientes para que a árvore não tombe na primeira tempestade prolongada.",
+        "Não fuja da estabilidade no lar ou financeira. Entenda que a ordem material que vocês julgam entediante, na verdade é a rampa de lançamento que permite os voos cada vez mais altos e seguros de vocês."
       ],
       mensagemFinal: [
-        "Vocês foram unidos para se transformar. Esta relação não existe para ser confortável ou previsível, mas para revelar o melhor que existe dentro de cada um.",
-        "Juntos, são capazes de viver uma história que poucos têm coragem de escrever. Que ela seja cheia de amor, respeito e muitas aventuras compartilhadas."
+        "A parceria de vocês é uma lufada de ar fresco, cheia de movimento, vida vibrante e quebras de crenças. Jamais percam o entusiasmo contagiante com a existência, pois é esse olhar inquieto e corajoso que alimenta o amor entre vocês em sua mais bela profundidade."
       ]
     }
   },
-
   6: {
-    title: "Perfil 6: O Amor do Cuidado e Equilíbrio Familiar",
-    freeText: "Este é um casal que tem o amor responsável e o cuidado genuíno como marcas registradas. A relação é construída sobre o desejo profundo de construir um lar harmonioso e de cuidar um do outro com dedicação.",
+    title: "Dinâmica 6: Cuidado Universal, Ninho e Responsabilidade Incondicional",
+    freeText: "A Dinâmica 6 representa o amor acolhedor elevado à máxima potência. Vocês não são apenas um casal, formam uma estrutura que assume feições quase que paternas e maternas para o mundo ao redor. O lar de vocês é o centro nervoso da união.",
     sections: {
       visaoGeral: [
-        "Este é um casal que tem o amor responsável e o cuidado genuíno como marcas registradas. Existe uma vocação natural para a parceria e para a criação de um ambiente de segurança e afeto.",
-        "O que observamos é que vocês foram feitos para cuidar um do outro — e também das pessoas ao redor. O lar que constroem juntos é um espaço de acolhimento.",
-        "Uma característica marcante desta relação é a generosidade. Ambos se dedicam intensamente ao bem-estar do parceiro e da família.",
-        "O desafio está em aprender a equilibrar o cuidado com o outro e o cuidado consigo mesmo."
+        "Do ponto de vista psicológico, o comportamento deste casal é inteiramente focado na nutrição emocional, conforto doméstico e no bem-estar de toda a família extensa (filhos, pais, agregados) e da comunidade.",
+        "Para vocês, amar é indissociável da ideia de cuidar ativamente. Não há limite claro entre as necessidades do relacionamento interno e o desejo enorme de prover um porto seguro a quem precisa no entorno. Vocês são aquele casal para o qual os amigos ligam em desespero durante as madrugadas, e para o qual os parentes migram aos domingos esperando acolhimento.",
+        "A energia da união possui um tom clássico, conservador no que tange aos valores e incrivelmente harmonioso. Vocês valorizam reuniões familiares, o cheiro de comida em casa, as tradições bem marcadas e a beleza e o conforto do espaço físico que habitam.",
+        "O risco fatal desta dinâmica é o esgotamento por excesso de responsabilidades. O casal pode carregar as pedras do mundo nos ombros, tentando resolver problemas de parentes enquanto silenciosamente o tesão e a energia primordial dos dois míngua sob a carga de estresse."
       ],
       atracaoInicial: [
-        "A atração nasce do cuidado. Vocês se sentem atraídos pela sensibilidade, pela generosidade e pela maneira como o outro trata as pessoas ao redor.",
-        "Existe admiração mútua pela capacidade de amar sem condições e de estar presente nos momentos importantes.",
-        "A relação costuma começar de forma natural, sem jogos ou manipulações, baseada em honestidade e intenções verdadeiras.",
-        "Há uma sensação de segurança desde o início, como se vocês já soubessem que podem confiar um no outro."
+        "A atração inicial teve fortes matizes de ternura e percepção de potencial para família. Pode não ter sido a faísca insana dos filmes de verão; foi o toque na alma perante o caráter cuidadoso, ético e protetor do outro.",
+        "Desde os primeiros passos, a sintonia de vocês já envolvia longas conversas sobre infância, valores, sonhos familiares e responsabilidades da vida.",
+        "Um reconheceu no outro aquele porto seguro onde as velas cansadas da rotina poderiam repousar perfeitamente para sempre."
       ],
       compatibilidadeEmocional: [
-        "Emocionalmente, este é um dos casais mais profundos e amorosos. Ambos possuem grande capacidade de empatia, cuidado e dedicação.",
-        "O desafio aparece quando o excesso de responsabilidade com o outro gera perda de identidade individual. É importante lembrar que cada um é completo por si só.",
-        "Aprender a amar sem se perder é a grande arte desta relação. O amor não exige sacrifício da própria essência.",
-        "Cultivar interesses individuais e momentos de autocuidado fortalece a relação em vez de enfraquecê-la."
+        "Altíssima capacidade de apoio nas horas extremas. A resiliência afetiva de vocês para cuidar do parceiro quando doente física ou emocionalmente é excepcional. O sentido de lealdade mútua não oscila.",
+        "Contudo, há uma fraqueza considerável: a síndrome da perfeição do sacrifício. Um parceiro pode não expressar abertamente as suas próprias dores para não causar preocupação no outro que já anda tão sobrecarregado de funções. Essa atitude heroica silencia a intimidade verdadeira. A compatibilidade exige que a dor e a chateação não sejam filtradas, mas amplamente compartilhadas.",
+        "Além disso, vocês tendem ao ciúme sutil quando o parceiro encontra conforto em outras vias (trabalho, hobbies solo) por não se sentirem 'tão necessários'. O cuidado excessivo sufoca; deem ao parceiro o direito de ter áreas independentes."
       ],
       comunicacao: [
-        "A comunicação tende a ser amorosa, gentil e respeitosa. Vocês possuem facilidade para dialogar e encontrar soluções que satisfaçam ambos.",
-        "O perigo está na tendência de evitar conflitos por medo de magoar o parceiro. A honestidade amorosa — dizer a verdade com carinho — é o maior presente que podem oferecer um ao outro."
+        "A fala é quase sempre macia, carinhosa e imbuída de boas intenções. A harmonia relacional dita o vocabulário, com a constante reafirmação verbal dos valores centrais do casal.",
+        "A armadilha na comunicação é varrer os atritos severos e as feiúras para debaixo do tapete a fim de proteger a bela estampa que criaram para fora. Ao não falarem duramente o que precisam por excesso de educação ou pavor do atrito, as águas de ressentimento vão fervendo lentamente no subsolo do inconsciente conjugal.",
+        "A necessidade primária de comunicação aqui é aprender a discordar e a ser um pouco incômodos nas demandas conjuntas sem sentir que ofenderão mortalmente o companheiro."
       ],
       amorIntimidade: [
-        "A intimidade deste casal é rica, profunda e profundamente afetiva. O amor físico é uma extensão natural do amor emocional.",
-        "Vocês se sentem seguros para se abrir completamente, e essa confiança é a base de uma vida íntima satisfatória.",
-        "A dedicação mútua e o cuidado constante criam um ambiente onde ambos podem ser exatamente quem são, sem máscaras.",
-        "O romance se fortalece quando vocês lembram de nutrir não apenas o papel de cuidadores, mas também o de amantes."
+        "A intimidade se beneficia drasticamente do ambiente seguro. Quanto mais em harmonia o lar se encontra e as obrigações familiares saciadas, mais fluidos, sensuais e profundos serão os encontros de amor íntimo e romance do casal.",
+        "O romantismo é traduzido fisicamente na manutenção do belo e do sensual (roupas de cama ricas, jantar primoroso, um bom vinho, carícias clássicas).",
+        "O vilão número um do sexo e da intimidade de vocês é o cansaço parental/funcional que esmaga os dois se tentarem salvar o mundo todos os dias em vez de reservarem o tempo e o ambiente unicamente para a dupla."
       ],
       vidaFinanceira: [
-        "O casal possui excelente potencial para construir um lar confortável e harmonioso. As decisões financeiras costumam ser tomadas pensando no bem-estar da família.",
-        "Existe tendência a investir em qualidade de vida, conforto do lar e educação. O desafio está em equilibrar o que é necessário com o que é desejado.",
-        "Aprender a dizer não para alguns gastos em nome de metas maiores será uma lição importante."
+        "Tendência a prover estabilidade primorosa, visando acima de tudo a qualidade de vida. Vocês preferem investir em propriedades, reformas na moradia e educação para os dependentes do que esbanjar com frivolidades solitárias.",
+        "Cuidado redobrado na gestão financeira com dinheiro emprestado à família, ou gastos colossais ajudando quem não lhes dá retorno ou sugando continuamente os seus fundos em nome da 'boa ação' e da piedade irrestrita."
       ],
-      desafiosKarmicos: [
-        "A principal lição desta união envolve aprender a receber. Existe uma forte tendência ao sacrifício excessivo, a colocar as necessidades do outro sempre acima das próprias.",
-        "O aprendizado aqui é que o amor verdadeiro é uma troca, não um fardo. Vocês precisam se permitir ser cuidados sem culpa.",
-        "Cuidar de si mesmo não é egoísmo — é a condição para cuidar bem do outro."
+      diaADia: [
+        "O lar é perfeitamente bem planejado em termos de rotina de manutenção e nutrição. O dia a dia possui ritmo clássico. Há prioridade em estar em casa sempre que possível e zelar pelas refeições e pelo ambiente acolhedor.",
+        "A tendência das escapadas passa pelos finais de semana tranquilos com aqueles que o casal elegeu como família. Como estilo de vida, apreciam artes domésticas, receber bem com fartura e conforto e manter fortes os vínculos sociais profundos na base de muita doação.",
+        "Precisam urgentemente colocar barreiras nas demandas não programadas do meio externo para as tarefas do próprio dia."
       ],
-      missaoEspiritual: [
-        "O propósito deste casal é criar um legado de amor. Vocês têm o dom de transformar qualquer ambiente em um lar, de reunir pessoas e de demonstrar que o amor cotidiano é uma das forças mais poderosas que existem.",
-        "Sua relação é um exemplo vivo de que é possível amar com profundidade, responsabilidade e alegria.",
-        "Através do cuidado que oferecem, inspiram outras pessoas a também construir relações mais afetivas."
+      conflitos: [
+        "Gatilhos máximos para as discussões ocorrem mediante o descaso ou a negligência com as tarefas do lar e do cuidado mútuo por uma das partes, bem como falta de demonstração de zelo para com algum parente vital ou amigo. Atitudes egoístas do parceiro despertam ferida de traição de valores.",
+        "Ao brigarem, costumam usar a postura de decepção silenciada, acusações que puxam o senso de culpa profunda ('depois de tudo que eu me sacrifico fazendo, é assim que sou tratado?') e a retirada temporária do afeto para que o outro entenda e pese o tamanho da falha e da ofensa desferida.",
+        "O risco final no conflito deste perfil relacional é que não haja reconciliação profunda a menos que a pessoa sinta genuinamente o remorso na alma. Vocês precisam aprender que todos falham pontualmente, aceitem ser mais práticos no perdão no dia a dia."
+      ],
+      pontosCegos: [
+        "A sobrecarga sistemática autoimposta perante a comunidade e perante os familiares esquecendo as próprias ambições de expansão do casal. Ser o amortecedor de choques do mundo externo destrói a própria vida de vocês dois.",
+        "Codependência pesada que paralisa o voo individual e a incapacidade brutal de saberem como dizer 'não' claramente aos outros para pouparem a vocês mesmos."
+      ],
+      crescimento: [
+        "O propósito comportamental deste casal no planeta é provar a força terapêutica, inabalável e colossal que um lar verdadeiro banhado com ética, carinho curador e fidelidade de propósitos produz à civilização.",
+        "A elevação final ocorre quando vocês traçam um limite sagrado: do portão para fora, doamos, ajudamos; mas da linha para dentro, as prioridades e a energia e os cuidados essenciais são nossos e de mais ninguém."
       ],
       potencialLongoPrazo: [
-        "Esta é uma das combinações com maior potencial para relacionamentos longos, estáveis e felizes.",
-        "Com o tempo, o amor entre vocês se aprofunda e se transforma em uma parceria que vai muito além do romantismo — torna-se companheirismo, respeito, cumplicidade."
+        "Altíssimo potencial. Vocês são dotados de resiliência sem limites aos reveses do destino porque nunca duvidam da força da família para a qual servem de espinha dorsal mútua.",
+        "Se aplicarem na relação uns miligramas saudáveis de puro e belo egoísmo para manter a intimidade focada e preservada, o céu familiar será perpétuo."
       ],
       conselho: [
-        "Cuidem também de si mesmos. Um amor que cuida do outro sem se esquecer de si mesmo é o amor que se mantém saudável e verdadeiro ao longo dos anos.",
-        "Nutrindo a si mesmos, vocês se tornam capazes de amar ainda mais profundamente."
+        "Diga não às demandas daquelas pessoas que vocês amam de fora da união de vocês. Deleguem suas exaustões. Cuidem imensamente das costas de quem cuida dos outros.",
+        "Namorem. Parem de vez em quando a grande roda das obrigações eternas e vão num jantar estritamente feito para dois deuses apaixonados, sem carregar pesos que não são seus."
       ],
       mensagemFinal: [
-        "Vocês foram unidos para construir um amor que seja lar. Um lugar de paz, aceitação e crescimento.",
-        "Que este amor, mesmo diante dos desafios, permaneça como porto seguro para ambos."
+        "A dedicação monumental de vocês salva a vida perante a loucura da sociedade moderna. O ninho está construído para o repouso. Agora abracem esse poder curador um ao outro e desfrutem sozinhos dos louros daquilo que mais construíram de grandioso: o verdadeiro amor acolhedor."
       ]
     }
   },
-
   7: {
-    title: "Perfil 7: A Conexão Intelectual e Profunda",
-    freeText: "Este é um dos casais mais profundos e únicos. Existe entre vocês uma conexão que vai além do comum, baseada em valores, ideias e uma busca compartilhada por conhecimento. A relação tem uma qualidade introspectiva que poucos compreendem.",
+    title: "Dinâmica 7: Intelecto, Silêncio Oculto e Foco Existencial",
+    freeText: "A Dinâmica 7 representa o casal dos mistérios profundos e da compreensão do que está além das aparências mundanas. Vocês não suportam o raso, o barulho superficial da sociedade e o fingimento fútil. A união de vocês é focada em ideias puras, crescimento analítico e extrema seletividade intelectual.",
     sections: {
       visaoGeral: [
-        "Este é um dos casais mais profundos e singulares. A conexão entre vocês vai além do que é comum — existe uma sintonia de ideias, valores e visão de mundo.",
-        "Frequentemente, pessoas com este perfil relatam a sensação de que já se conheciam antes, como se houvesse um reconhecimento profundo desde o primeiro encontro.",
-        "Uma característica marcante desta relação é a necessidade de espaço para a reflexão individual. Ambos valorizam momentos de solitude e processamento interno.",
-        "O que observamos é que este casal não se contenta com superficialidades. A busca por entendimento mútuo e por crescimento pessoal é uma constante."
+        "Psicologicamente, este é o relacionamento menos dependente das frivolidades da vida em dupla. A conexão primordial encontra as suas bases na inteligência madura, no silêncio mútuo cheio de significados e num agudo senso de isolamento protetivo do mundo profano.",
+        "Para vocês dois, sentar em absoluto silêncio lendo um livro na sala, com um respeitando plenamente a individualidade do outro no ambiente, pode ser mais profundo e gratificante que meses de falação incessante de qualquer outra dinâmica rotineira. A compreensão nas entrelinhas é fortíssima.",
+        "Vocês possuem uma visão aguçada para descobrir verdades difíceis e enxergar a motivação escondida sob a máscara alheia da sociedade, atuando juntos como grandes analistas da realidade que os circunda.",
+        "O ponto fatal do perfil relacional reside na dificuldade monstruosa em conectar nos níveis emocionais mundanos onde as trivialidades moram e onde o toque caloroso físico deveria imperar diariamente, podendo transformar a relação em duas ilhas congeladas vizinhas pela retração defensiva do isolamento excessivo."
       ],
       atracaoInicial: [
-        "A atração entre vocês é singular e difícil de descrever em termos simples. Não se baseia apenas na aparência física ou em características superficiais.",
-        "Existe algo mais profundo que os conecta: uma ressonância de ideias, valores e visão de mundo. Vocês se sentem compreendidos de uma forma que poucas pessoas proporcionam.",
-        "Muitas vezes, o encontro acontece em circunstâncias incomuns ou em momentos de transformação pessoal. A sensação é de reconhecimento.",
-        "Não é uma atração explosiva, mas sim o encontro de duas mentes que se complementam."
+        "No primeiro choque do encontro, a atração foi regida pela curiosidade implacável, onde a mente perscrutadora e enigmática daquele parceiro pareceu o abismo certo para investigar os segredos mais fundos. Foi um mergulho no olhar inteligente e intrigante.",
+        "As conversas, ao fluírem, provavelmente abordavam temas grandiosos: a natureza do espaço, de crenças antigas, teorias complexas e visões que afastam a mediocridade, criando instantaneamente uma redoma psíquica particular que isolava vocês da multidão medíocre à volta."
       ],
       compatibilidadeEmocional: [
-        "Emocionalmente, esta é uma união de grande profundidade, mas também de grandes desafios. Ambos tendem à introspecção e ao processamento interno das emoções.",
-        "Existe compreensão mútua de uma forma quase silenciosa, mas também o risco de criar distâncias emocionais quando um não compartilha o que sente.",
-        "A chave está em criar um espaço seguro onde a vulnerabilidade seja bem-vinda. Nem sempre é fácil traduzir em palavras o que se passa por dentro, mas a prática fortalece a conexão.",
-        "Lembrem-se: o outro não pode ler sua mente. Compartilhar é um ato de amor."
+        "Na dor calada, na pesquisa interna e na aceitação tácita e profunda da dor alheia o respeito não flutua. O silêncio compartilhado da compreensão silenciosa sem julgamentos fáceis na compatibilidade de mentes confere poder.",
+        "A extrema deficiência emocional aparece nos atritos e chateações cotidianas onde sentimentos 'menores' e menos racionais imperam: tristeza passageira irracional ou medo. A frieza psíquica afiada impede de dar o conforto puramente afetuoso por estarem focados apenas nos aspectos intelectuais e matemáticos lógicos das falhas. Exige-se paciência gigante para amparar um carinho sem sentido em horas de necessidade orgânica de vulnerabilidade que não podem ser teorizadas.",
+        "Precisam urgentemente abrir comportas mais generosas e vulneráveis sem que a cabeça analise exaustivamente antes o grau e o motivo prático da dor irracional. Aceitar a emoção do instante nua e crua."
       ],
       comunicacao: [
-        "A comunicação entre vocês pode ser extraordinária quando existe abertura. São capazes de conversar sobre temas que a maioria das pessoas jamais abordaria — filosofia, propósito, vida, conhecimento.",
-        "O desafio aparece nas conversas cotidianas e emocionais. Nem sempre é fácil traduzir sentimentos em palavras, mas com paciência e prática, a comunicação se torna uma das maiores riquezas da relação."
+        "Comunicação baseada em altíssima objetividade analítica e verdades cirúrgicas brutais e honestas. Palavras precisas sem excesso e conversas onde o sentido real impera na avaliação rigorosa da sociedade e vida prática.",
+        "A armadilha na comunicação de vocês reside em achar inútil relatar aos parceiros questões do dia a dia por parecem estúpidas ou indignas, calando angústias que poderiam ser debeladas. Quando magoado, o parceiro tende ao ensimesmamento punitivo silencioso, cortando pontes de contato que só o outro pode religar desvendando a barreira defensiva.",
+        "A cura relacional se dá desenvolvendo vocabulário emocional simples e claro para o dia a dia, para que não cheguem a estágios herméticos insalubres em brigas profundas."
       ],
       amorIntimidade: [
-        "A intimidade desta relação possui dimensões que vão além do físico. Existe uma necessidade de se sentir verdadeiramente compreendido e aceito.",
-        "Quando esse nível de profundidade é alcançado, a intimidade física torna-se uma experiência rica e significativa.",
-        "O silêncio compartilhado, os olhares de cumplicidade e os momentos de reflexão juntos são formas de amor tão poderosas quanto qualquer palavra.",
-        "O desafio está em não deixar que a profundidade intelectual substitua a conexão física e afetiva."
+        "A vida íntima, sensual, amorosa e sexual atua de forma inseparável do respeito psíquico na adoração. Exige alto envolvimento de pensamento e de sedução por parte do cérebro com diálogos e com estímulos intelectuais contínuos e enigmáticos antes da conexão real do físico orgânico cru e carnal ser aceita integralmente sem reservas.",
+        "Para preservar e acender o romance de longo prazo na estabilidade sexual e relacional pura as viagens contemplativas e o desligamento em retiros ou exploração científica da própria relação de vocês no mundo atua maravilhosamente e traz vitalidade íntima na dupla longe da barulhenta superficialidade alheia."
       ],
       vidaFinanceira: [
-        "Financeiramente, este casal tende a não dar grande importância à riqueza material como um fim em si mesma. O que buscam é segurança suficiente para ter liberdade de explorar seus interesses.",
-        "Podem prosperar em áreas ligadas ao conhecimento, pesquisa, ciência, arte ou educação.",
-        "O planejamento financeiro conjunto exigirá atenção, pois a tendência ao idealismo pode afastar o foco das necessidades práticas do dia a dia."
+        "Tendem à estabilidade cautelosa do controle frio ou à fúria investigativa a fim de possuírem o patrimônio apenas com o intuito focado de comprarem para eles sua mais preciosa posse a médio longo prazo: tempo livre imperturbável pela burocracia de pagar contas profanas mesquinhas do mês. Dinheiro importa por sua força protetora e garantidor da distância necessária.",
+        "Têm que policiar a teimosia crônica em investimentos que julgam absolutos sozinhos recusando aceitar conselhos pragmáticos vitais de conselheiros mundanos nos reveses de ciclo econômico por orgulho na análise genial teórica incondicional do casal isolada perante perigos e perdas."
       ],
-      desafiosKarmicos: [
-        "O principal desafio desta união é a tendência ao isolamento. Tanto individual quanto como casal, existe o risco de se afastarem do mundo exterior de forma excessiva.",
-        "O aprendizado está em compreender que o conhecimento e a profundidade ganham ainda mais valor quando compartilhados com os outros.",
-        "Outro ponto importante é aprender a lidar com as imperfeições — tanto as do parceiro quanto as suas próprias. A perfeição não é um destino realista para nenhuma relação."
+      diaADia: [
+        "A rotina familiar flui harmoniosamente se houver absoluto respeito à agenda silenciosa. É uma paz meditativa sagrada e o retiro perfeito de leitura, organização, foco de pesquisas contínuas e quietudes prolongadas necessárias sem culpa perante pressões para socialização fútil o tempo inteiro exigido no final de semana pelo resto.",
+        "Desdenham badalações incessantes frívolas vazias que os cansam e sobrecarregam psiquicamente demais por terem baterias recarregadas nos recantos da privacidade. Como modo de vida as companhias íntimas e profundamente sinceras bastam e saciam os anseios plenamente na companhia de seus amados pares reclusos de confiança da turma isolada protetora."
       ],
-      missaoEspiritual: [
-        "O propósito deste casal é buscar e compartilhar sabedoria. Vocês foram unidos para crescer juntos em um nível de profundidade que poucos alcançam.",
-        "Através desta relação, ambos serão convidados a confrontar suas crenças, a questionar e a se transformar.",
-        "A jornada de vocês juntos é, em si mesma, um caminho de aprendizado contínuo."
+      conflitos: [
+        "O gatilho que desencadeia brigas monumentais com retração fria no ápice é a mentira banal detectada agudamente no ar e atitudes onde a quebra de confiança invadiu o espaço particular das individualidades ferindo o pacto silente rigoroso na relação ou cobranças que esmagam o espaço na pressão constante.",
+        "Ao brigarem adota-se um tom mortal de avaliação e de gelo analítico nas falas lógicas incontornáveis perante as acusações cortantes. Raramente haverá histeria descontrolada na superfície mas o atrito na intimidade congelará as comunicações no tratamento passivo e punitivo das barreiras psicológicas fechadas totalmente onde o frio corrói fundo os pilares.",
+        "As curas não são conquistadas pelo berro, mas exigirão sim as confissões genuínas de coração desnudado, humildes nas fraquezas reais despidas e o compromisso ético renovado absoluto perante todas as leis e razões reestruturando as peças."
+      ],
+      pontosCegos: [
+        "O ponto fatal do isolacionismo total cínico acreditando firmemente e perigando nas paranoias da arrogância mental contra a convivência mundana ao passo que as esferas práticas exigem que pisem descalços na terra para a simplicidade sem tantas armaduras conceituais fechadas em torres inatingíveis e que podem resfriar com a poeira a vida apaixonante do afeto rotineiro.",
+        "A dificuldade letal na expressão do afeto bruto e simples onde o ego se amedronta na pura insegurança da vulnerabilidade nua para que não sejam machucados no profundo."
+      ],
+      crescimento: [
+        "O propósito comportamental deste núcleo na existência humana repousa para testemunhar o significado inquebrável, ético do refino mental absoluto desbravando o vazio e trazendo claridade dos segredos e a evolução no caos aos que com vocês partilham da coragem da percepção íntima profunda real e autêntica longe de máscaras.",
+        "As vitórias do amadurecimento das etapas são saboreadas por inteiro ao permitirem sentir no máximo as vivências afetivas orgânicas descontroladas com confiança infinita da rede sagrada do outro acolhendo onde não existirão mais armaduras rígidas protetoras necessárias pesando e machucando nos ombros exaustos."
       ],
       potencialLongoPrazo: [
-        "Quando encontram o equilíbrio entre profundidade e leveza, esta é uma das uniões mais ricas e significativas.",
-        "Com o tempo, tornam-se guardiões mútuos do crescimento um do outro. Envelhecem como companheiros que percorreram juntos um caminho extraordinário de descobertas."
+        "Especial, forte, mas muito peculiar e de seleta compatibilidade. Se atingirem acordos básicos profundos e não resvalarem perigosamente caindo na aridez intelectual emocional sem vida afetiva trocada de volta do gelo frio as bases filosóficas estruturais durarão unidas mais que pedras fundamentais até ao infinito.",
+        "Terão os caminhos plenos nos passos onde não precisam mais da provação de discursos exaustivos do nada por já serem a resposta exata nos olhos mudos da presença e amor constante eterno sem distúrbio."
       ],
       conselho: [
-        "Tragam o amor para o cotidiano. A profundidade é um dom, mas o amor também se nutre de momentos simples, de risadas e de alegria compartilhada.",
-        "Não deixem que a busca pelo extraordinário os faça perder o extraordinário que existe nas pequenas coisas do dia a dia."
+        "Lembrem sempre de trazer o carinho banal à rotina sem que isso pareça artificial perante lógicas rigorosas analíticas e saibam partilhar na comunhão do erro sem grandes análises filosóficas do caos para tudo. Não reprimam o lado bicho impulsivo na intimidade de vez em quando abraçando inteiros e cegos no instinto natural sem medo dos mistérios da emoção confusa sem respostas da dor.",
+        "Façam concessões gentis na participação familiar profana leve de vez em quando do cotidiano da rotina da casa rindo na leveza simplória do tempo real gasto em companhias despojadas de grandes saberes na terra viva descalça."
       ],
       mensagemFinal: [
-        "Vocês foram unidos para se revelar um ao outro. Cada um é o espelho mais profundo que o outro possui.",
-        "Através desta relação, ambos terão a oportunidade de se conhecer de uma forma que jamais alcançariam sozinhos. Que este seja um caminho de descoberta, crescimento e amor."
+        "Vocês possuem um grau singular das conexões inesgotáveis nos corações na busca autêntica de verdades limpas e intelectuais sublimes e da pureza na comunhão onde não habita as futilidades falsas perante aparências. Desarmem com doçuras eventuais as defesas impenetráveis conjuntas perante a vulnerabilidade mútua de amor diário simples incondicional livre e verão desabrochar uma intimidade invulnerável nos alicerces inabaláveis celestiais e materiais para a história."
       ]
     }
   },
-
   8: {
-    title: "Perfil 8: O Poder da Realização e Conquistas",
-    freeText: "Este é um casal com potencial extraordinário para realizações. Ambos possuem ambição, determinação e capacidade de transformar sonhos em realidade. Juntos, formam uma força poderosa de construção e prosperidade.",
+    title: "Dinâmica 8: Ambição Compartilhada, Poder e Construção Magistral",
+    freeText: "A Dinâmica 8 é guiada pelo motor da realização massiva. O relacionamento entre vocês possui, nas suas bases profundas, a energia de duas forças imperiais que se uniram para multiplicar o impacto que teriam sozinhas. A visão de longo prazo é focada nos resultados imponentes da dupla.",
     sections: {
       visaoGeral: [
-        "Este é um casal com potencial extraordinário para realizações. Ambos possuem ambição, determinação e uma capacidade notável de transformar sonhos em realidade.",
-        "Juntos, formam uma força poderosa. Não é um relacionamento de pessoas passivas — pelo contrário, há uma energia de construção e prosperidade que os acompanha.",
-        "Uma característica marcante desta relação é a visão de longo prazo. Vocês não pensam apenas no presente, mas no legado que desejam construir.",
-        "O que observamos é que este casal tem tudo para alcançar grandes conquistas materiais, desde que não se esqueça de cultivar também o lado afetivo da relação."
+        "Sob o prisma comportamental, este perfil conjugal assemelha-se a uma junta diretiva extremamente alinhada e potente. O padrão mestre aqui é o controle estratégico sobre os passos do sucesso e do patrimônio. Vocês rejeitam a fraqueza mental contínua, a desistência fácil de metas e exigem que o companheiro cresça sempre ombro a ombro na excelência da atuação profissional e social, servindo ambos como espelhos constantes da alta performance e produtividade mútua na vida.",
+        "Este não é o casal da passividade ou das incertezas eternas. Se há desafios externos nas metas da união, os cérebros frios executivos logo formam frentes de ataque unificadas e obstinadas solucionando os obstáculos à frente esmagando problemas. A força que move os dois impulsiona riquezas não apenas financeiras, mas o status familiar conquistado com enorme suor tático dos envolvidos no plano principal de longo prazo grandioso compartilhado sem concessões ao amadorismo no meio do caminho focado.",
+        "Os riscos gigantescos encontram-se na armadilha da hiper exigência do controle excessivo contínuo do casal na rigidez e nas avaliações do amor atadas visceralmente às métricas utilitárias de desempenho de produção. Quando o parceiro exausto apenas requer colo cego incondicional em falhas profundas de crise sem ter seu 'currículo da vida' analisado ou metas ajustadas com exigência insensível executiva para melhorias forçadas gerando enorme sobrecarga e o bloqueio afetivo relacional gelado se espalha nos ambientes fechados do amor por estarem voltados demais aos números e na manutenção de status forte sem fraquezas percebidas.",
+        "A sublimação de maturidade deste casal invencível impõe as fronteiras que proíbam o trabalho exaustivo perene e o cálculo do sucesso mundano nas horas da intimidade, desarmando o lado gestor rígido e severo nos fins de dias da guerra a fim do conforto da aceitação irrestrita pacífica desarmada sem resultados a apresentar para ninguém na sala da intimidade sagrada pura do ninho familiar blindado pelo carinho sem regras ou metas frias ditadas da sociedade imposta lá fora na vida e no poder material."
       ],
       atracaoInicial: [
-        "A atração entre vocês costuma ser intensa e marcada pela admiração das capacidades um do outro. Vocês percebem no parceiro alguém com visão, determinação e ambição.",
-        "Existe fascínio pela força de caráter, pela capacidade de realização e pela presença marcante que cada um possui.",
-        "A relação frequentemente começa em contextos profissionais, de negócios ou em situações onde as habilidades de ambos estão em evidência.",
-        "Há um reconhecimento mútuo de que encontraram alguém à altura dos seus próprios sonhos."
+        "A faísca primordial de encontro não ocorreu pelas belezas frágeis passivas; vocês captaram num segundo no ar o olhar direto de firmeza inquebrável sem o menor pudor de liderança instintiva. Havia força, a altivez segura de um propósito que caminha passos pesados na ambição real inegociável nos corações fortes sem rodeios vitimizados na superfície do discurso atraente fatal de um magnetismo da confiança pura desbravadora corajosa imperiosa da atitude.",
+        "Os encontros pautaram os alicerces nas percepções do potencial do gigante de construção da vida que residia oculto sob a força da postura elegante pragmática demonstrada do parceiro impulsionando o interesse irrefreável na energia do companheiro para jornadas longínquas pesadas colossais onde podiam de fato estarem protegidos pela solidez comprovada na ambição respeitosa."
       ],
       compatibilidadeEmocional: [
-        "Esta é a área que exige maior atenção. Ambos tendem a colocar as realizações externas acima das necessidades emocionais.",
-        "O amor existe, é profundo e real, mas pode ser sufocado pelo peso das responsabilidades e da ambição. Com a correria do dia a dia, a conexão emocional pode ficar em segundo plano.",
-        "Criar espaço para a vulnerabilidade, para o afeto e para o cuidado mútuo será o grande desafio — e também o maior tesouro desta relação.",
-        "Reservar tempo de qualidade um para o outro não é opcional: é essencial."
+        "São pilares fundamentais impenetráveis nos laços afetivos sob severas tempestades, onde oferecem segurança psicológica irrestrita a quem escolhem e honram os sacrifícios dolorosos mantendo o prumo da solidez conjugal de confiança blindada na ética forte frente às calamidades ou as exigências onde as promessas jamais desabarão na fuga sem sentido a médio e longo prazo frente aos piores inimigos da realidade cruel nas provas existenciais suportadas ombro a ombro na trincheira férrea protetora.",
+        "No revés perigoso, falham profundamente na fragilidade empática da dor descontrolada irracional prolongada de um ente em abalos ou perdas inexplicadas orgânicas sensíveis exigindo a doçura e afeto simples sem lições impacientes de superação contínua. Possuem pavios imensamente curtos na compreensão dos processos de lamentações emocionais prolongadas parecendo frios calculistas ditatoriais para estancarem fraquezas da vulnerabilidade nua no parceiro, gerando enorme solidão congelante por não entenderem a lentidão desestruturada nas reações alheias. Necessitam aprender urgentemente acolher as quebras temporárias nos espíritos exaustos do ser humano em luto orgânico sem urgência da performance heroica estancando curas apressadas forçadas brutais."
       ],
       comunicacao: [
-        "A comunicação tende a ser eficiente, objetiva e voltada para resultados. Vocês preferem agir a falar e costumam comunicar o amor através de atitudes concretas.",
-        "O cuidado necessário está em não permitir que a eficiência substitua a intimidade. Algumas conversas precisam acontecer pelo simples prazer de se conectar, sem objetivo definido."
+        "Táticas eficientes implacáveis nos alinhamentos práticos operacionais na claridade executiva do dia e dos rumos sem mimimis das perdas dos debates teóricos infundados circulares nas retóricas estéreis nas ordens sem volta e na franqueza extrema afiada dos comandos sem filtros. O acordo de limites da responsabilidade do funcionamento perfeito do plano logístico conjugal do domínio total pragmático no sucesso é brutal na clareza resoluta irrestrita no dia a dia da máquina a dois blindada.",
+        "Quando magoados os parceiros recuam num distanciamento intimidatório onde o silêncio possui gumes cortantes punitivos frios ou entram em ataques demolidores exigentes da argumentação inquebrável das análises ferindo na base egoica mortal no peito frágil no momento do combate impiedoso sem volta machucando as lembranças no fundo nas verdades implacáveis jogadas no nervo vivo da fraqueza pontual revelada da briga do estresse gerador crônico na pressão gigante insuportável no fundo da raiva da falta de poder dominado ou desrespeitados perante as falhas do caminho do sucesso exigido imposto."
       ],
       amorIntimidade: [
-        "A vida íntima deste casal pode ser intensa e apaixonada quando existe equilíbrio entre o lado profissional e o pessoal.",
-        "O desejo e a atração permanecem fortes ao longo do tempo, mas o foco excessivo nas conquistas externas pode fazer com que a intimidade seja negligenciada.",
-        "Proteger o tempo e o espaço da relação como uma prioridade absoluta é essencial para manter a conexão viva.",
-        "Lembrem-se: o sucesso profissional não compensa o vazio afetivo."
+        "Quando desarmam as capas rigorosas imponentes do fardo impiedoso de executores do mundo encontram o abrigo de uma chama e uma sensualidade avassaladora feroz de doações plenas onde as fraquezas ocultas reprimidas e cansadas explodem em amor carnal generoso de proteção e no abraço na intimidade protetora com força da posse amorosa e do descanso nos portos seguros perante o domínio dos espaços quentes na entrega sem limite sexual nos momentos exatos desligados das luzes frenéticas do mundo externo pesado ininterrupto esmagador lá fora na lida estressante da vida da guerra material rotineira dura perene do tempo longo eterno cansativo do adulto real focado nas construções difíceis pesadas das cargas solitárias das vitórias da carreira estelar contínua de exigências da sobrevivência cruel."
       ],
       vidaFinanceira: [
-        "Este é o casal com maior potencial de prosperidade material. Possuem capacidade natural para identificar oportunidades, liderar equipes e construir patrimônio.",
-        "Quando trabalham juntos em direção a objetivos comuns, os resultados são impressionantes.",
-        "O equilíbrio necessário está em lembrar que a riqueza é um meio, não um fim. O verdadeiro legado é construído também com amor, presença e conexão humana."
+        "Insuperáveis de um modo global magnético no instinto da capacidade aguçada feroz letal no tino estratégico em criar fontes inesgotáveis seguras sólidas dos dinheiros, as economias colossais familiares em progressão contínua firme contornando reveses para acumular legados inabaláveis blindando de todas formas e nas previsões dos ataques aos perigos materiais de perdas no núcleo inviolável dos investimentos conjuntos nas riquezas de expansões sucessivas contínuas protegidas sem abalos nos mares da volatilidade caótica nas tormentas severas financeiras perante as oscilações assustadoras da sorte que não existem no mapa real material prático dos domínios táticos impenetráveis da segurança imposta do sistema próprio conjugal forte do patrimônio da vida conquistada com honras a dois impávidos soberanos nos cumes solitários e poderosos."
       ],
-      desafiosKarmicos: [
-        "O principal desafio desta união envolve o equilíbrio entre poder e amor. Existe tendência ao controle, à competitividade e à dificuldade de demonstrar vulnerabilidade.",
-        "O aprendizado está em compreender que o verdadeiro poder não está na dominação, mas na capacidade de elevar o outro sem diminuir a si mesmo.",
-        "As maiores lições virão dos momentos em que vocês precisarem escolher entre estar certo e estar junto."
+      diaADia: [
+        "A vida e o dia em si ditam no cronograma forte nas responsabilidades vitais inadiáveis rígidas focadas com disciplina nas altas produções sem margens da perguiça na exigência e da preguiça negligenciadora impeditiva do tempo no alto valor e rendimento de cada ciclo da meta de energia bem otimizada sem lamentos de comodismos frívolos vazios estagnados improdutivos das distrações fatais nas quebras do ritmo vital e do alto padrão estético de manutenção da ordem de funcionamento e excelência do maquinário focado firme implacável nos propósitos na organização suprema da eficiência da dupla de vida contínua com os lazeres refinados com estilo, recompensas merecidas valiosas em qualidade dos bons serviços requintados na restauração da dignidade após as exigências árduas brutais estafantes rotineiras da lida exaustiva de comando solitário na liderança diária das cobranças do mundo implacável cobrando excelência."
       ],
-      missaoEspiritual: [
-        "O propósito deste casal é construir um legado — não apenas material, mas humano. Vocês têm a capacidade de impactar a vida de muitas pessoas através do que criam juntos.",
-        "Seja através dos negócios, das oportunidades que geram ou do exemplo que oferecem, sua relação pode ser uma fonte de inspiração.",
-        "Mostrem que é possível unir sucesso profissional e amor verdadeiro."
+      conflitos: [
+        "Ativa nas humilhações ou os cerceamentos indevidos das vontades, nas quebras dos propósitos onde um se sinta usado de forma covarde desrespeitando o território soberano e no microgerenciamento da liberdade no excesso imposto e das exigências nos abusos da intolerância insensível ditatorial com imposição autoritária esmagando nas humilhações que deflagam o vulcão terrível focado da frieza insensível de cortes definitivos e gelados no afastamento das fronteiras rompidas da indignação na falta do reconhecimento das parcerias no fundo da balança dos merecimentos justos na partilha exata nos pesos e nas réguas dos esforços nas frustrações punitivas gigantes na cólera silenciada mortal das crises absolutas do controle da autoridade rompida."
+      ],
+      pontosCegos: [
+        "Ignorar nas métricas dos retornos concretos mensuráveis palpáveis de bens pragmáticos reais as sementes delicadas das carências profundas vulneráveis escondidas dos clamores invisíveis das pausas doces irracionais gratuitas sem sentido lógico das futilidades das horas mortas no romantismo de lazer e focar unicamente o casamento familiar sagrado blindado de afeto nas planilhas do contrato perene imutável nos rigores práticos como engrenagens contínuas da produtividade na seca aridez das estepes geladas e pesadas solitárias."
+      ],
+      crescimento: [
+        "A marca de vocês e os propósitos fincados do destino ensinam a resiliência no domínio ético e inspiram a majestade humana perante a covardia do comodismo fácil servindo como guias e os exemplos morais invencíveis das fundações das comunidades das riquezas providas nas direções impulsionadoras a toda geração futura inspirada no modelo do legado das fortunas e potências geradas da persistência da superação irrestrita do poder nos exemplos invencíveis colossais prósperos justos puros."
       ],
       potencialLongoPrazo: [
-        "Quando encontram o equilíbrio entre ambição e afeto, esta é uma das uniões mais poderosas e duradouras.",
-        "Com o tempo, constroem juntos um império que vai além das finanças — um império de histórias, conquistas compartilhadas e amor que resistiu à pressão."
+        "Magnífico invulnerável da sobrevivência inquebrantável blindada dos compromissos nas eras sucessivas desde que o respeito do espaço e a divisão justa harmoniosa nas metas de ambos seja zelada equilibrada de sabedoria empática das tréguas pacíficas e doçuras gratuitas nas vulnerabilidades humanas do descanso nas fortalezas protetoras de confiança irrestrita da paz e dos triunfos e das calmas inesgotáveis plenas dos fins da tarde de recompensas serenas na coroa sagrada da paz eterna de velhices serenas sem armaduras rígidas na aceitação irrestrita plena desarmada madura dos corações eternos justos livres e verdadeiros da entrega imortal."
       ],
       conselho: [
-        "Lembrem-se regularmente do porquê escolheram um ao outro. O sucesso externo não tem sabor quando não há alguém ao lado para celebrá-lo.",
-        "Invistam no relacionamento com a mesma energia e estratégia que investem nos negócios. O retorno será imensurável."
+        "As dores profundas não se gerenciam com a inteligência do planilhamento ou soluções pragmáticas forçadas impiedosas nas superações e não julguem os cansaços esporádicos com os olhos severos punitivos das preguiças frívolas no rigor absoluto contínuo intolerante implacável frio de um patrão que ignora lutos irrefutáveis internos silenciados com vergonhas medonhas profundas caladas de amor na alma despida sofrida machucada dolorida na vulnerabilidade das lutas diárias das existências humanas perdoadas falhas das fraquezas aceitas com beijos quentes apaziguadores confortadores na cama pacífica da compaixão real madura compassiva verdadeira limpa."
       ],
       mensagemFinal: [
-        "Vocês foram unidos para construir um legado de poder e amor. Mas lembrem-se: ao final da vida, o que permanece não é o que acumularam, mas quem amaram e como amaram.",
-        "Que o amor de vocês seja tão grandioso quanto as conquistas que alcançarão juntos."
+        "Construam na beleza sólida da grandeza a imponente fortaleza impenetrável de domínio sem pares de vocês juntos na vitória das conquistas épicas inesquecíveis formidáveis com honras justas da história, mas garantam o segredo sagrado valioso escondido de abrirem o santuário da suavidade interna incondicional secreta inviolável nas moradas calmas do refúgio do cansaço e do romance nos braços amorosos de doçuras onde nenhum controle autoritário severo frio tenha vez e deponham juntas com coragem cega invencível todas amarras desnecessárias no perdão dos abraços eternos de almas descansadas plenas."
       ]
     }
   },
-
   9: {
-    title: "Perfil 9: A Conexão Humanitária e o Amor Incondicional",
-    freeText: "Este é um casal que representa o amor em sua forma mais ampla e generosa. A relação é marcada pela compaixão, pela sabedoria acumulada e pela capacidade de amar de forma incondicional. Há entre vocês uma conexão que vai além do individual.",
+    title: "Dinâmica 9: Humanitarismo, Idealismo e Expansão Transcendental",
+    freeText: "A Dinâmica 9 traduz o auge do amor voltado ao propósito. Vocês se reconhecem em uma missão invisível muito mais vasta e sublime do que os pequenos caprichos rotineiros. O relacionamento é baseado num altruísmo profundo, no romantismo clássico inesquecível de entrega e num sonho compartilhado invencível inquebrável sublime puro das utopias justas compassivas no coração desbravador ético verdadeiro pacífico real espiritual amplo compassivo maduro leal incondicional de luz inesgotável.",
     sections: {
       visaoGeral: [
-        "Este é um casal que representa o amor em sua forma mais ampla e generosa. A relação é marcada pela compaixão, pela sabedoria e pela capacidade de amar além das condições.",
-        "Quando duas pessoas se encontram neste perfil, existe entre elas uma conexão que transcende o interesse individual. Há uma compreensão profunda de que o amor é maior do que dois egos.",
-        "Uma característica marcante desta relação é o desejo de contribuir com o mundo. Vocês não querem apenas ser felizes juntos — querem que a felicidade de vocês faça diferença na vida de outras pessoas.",
-        "O que observamos é que este casal possui uma maturidade emocional que permite enxergar além das dificuldades cotidianas."
+        "Psicologicamente, este é o relacionamento cujo foco transborda os limites habituais fechados dos muros do núcleo egoísta isolado nos interesses particulares rasos. A relação vive oxigenada pela profunda necessidade crônica da generosidade e nos compassos altruístas perante a humanidade à volta que respira inspirada na energia transformadora benévola amorosa da postura de bondade da dupla radiante nas influências dos apoios nas inspirações de referências fraternais inesgotáveis nos meios.",
+        "Existe a marca contundente dolorosa aguda nas percepções dos sentimentos da empatia global compassiva com todas as criaturas sem fronteiras nas dores nas lutas das existências difíceis com o dom curador e orientador acolhedor sábio tolerante absoluto nos abrigos onde se dedicam aos esforços em transformar ativamente de alguma maneira o sofrimento à volta onde andam tocando os problemas dos mundos nas dedicações de valores éticos ideais inquebráveis irrestritos puros pautando sempre todas as decisões perenes.",
+        "A fraqueza sistêmica e o grande perigo letal das dinâmicas repousa na auto exaustão contínua irresponsável na imolação psíquica, mental, na dilapidação perigosa do capital financeiro do casal esgotado pelas lutas alheias ou as doações infindáveis da filantropia das piedades em detrimento e total esquecimento cego egoísta e suicida da própria qualidade essencial, da estabilidade prática, proteção, blindagem de sobrevivência de vocês onde tentam de todas formas puras as ajudas milagrosas abnegadas para fora sugados vampirizados na síndrome trágica amarga ingrata silenciosa dos mártires nas omissões dos seus deveres na saúde amorosa no núcleo principal frágil de vocês.",
+        "Precisam das ancoras inquebráveis mundanas lógicas dos sensos de proteção limítrofe no altruísmo descontrolado para a sanidade não ceder no meio do esgotamento nas decepções sombrias depressivas cruéis dos retornos da realidade nas ingratidões duras amargas nas feridas cruéis expostas solitárias esgotadas no amor desgastado nas estafas severas tristes cínicas nos recolhimentos ressentidos do silêncio frio do mundo exaurido em cobranças frias pesadas fúteis mortais."
       ],
       atracaoInicial: [
-        "A atração entre vocês possui uma qualidade difícil de explicar racionalmente. Existe um reconhecimento profundo, como se já se conhecessem de outras experiências de vida.",
-        "Há compaixão, admiração pelos valores e pela forma como cada um enxerga o mundo. O interior do outro é tão atraente quanto sua aparência.",
-        "O encontro costuma acontecer em momentos de transição, quando ambos estão prontos para uma transformação importante em suas vidas.",
-        "Não é por acaso que vocês se encontraram neste momento específico da vida de cada um."
+        "Vocês não colidiram de início pela trivial atração visual das epidermes apenas vazias na forma; foi a captação na frequência oculta da nobreza ética, da grandeza dos discursos nos horizontes vastos no caráter elevado, das virtudes irrefutáveis da bondade transparente nos gestos de integridade inspiradora que puxou um ao outro feito gravidade pura inevitável profunda. Era a alma antiga cansada maravilhosa nos olhares maduros nos sorrisos de compassiva luz infinita de valores puros irretocáveis na decência honrosa nas virtudes.",
+        "A atração e a química nasceram dos valores afins nos sonhos dos propósitos gigantes sublimes nas indignações morais conjuntas perante a dor, sentindo de pronto a empatia gigante acolhedora e de perdões absolutos dos ombros inabaláveis fraternais pacíficos seguros acolhedores fortes de lealdades justas de uma companhia de luz perene inseparável infinita nos horizontes."
       ],
       compatibilidadeEmocional: [
-        "A compatibilidade emocional é profunda e rica. Existe grande capacidade de compaixão, aceitação e compreensão mútua.",
-        "Ambos possuem sensibilidade elevada para sentir as emoções do outro, o que cria uma conexão quase instintiva.",
-        "O desafio está na tendência ao sacrifício excessivo. A generosidade desta relação, quando não equilibrada, pode gerar exaustão emocional.",
-        "Lembrem-se: amar o mundo não significa esquecer de si mesmos. O equilíbrio entre dar e receber é fundamental."
+        "Profundezas curadoras extraordinárias na intimidade do amparo nos piores vales das depressões da vida, nos tombos sem retornos nos apoios sem exigências da compaixão irrestrita onde a fonte da compreensão nos julgamentos apagados no perdão mútuo absoluto onde abraçam os fantasmas dolorosos com as doçuras divinas do amor pacífico calmo brando curativo silencioso consolador que perdoa na plenitude dos braços das madrugadas cruéis escuras dos lamentos calados das tristezas pesadas orgânicas do choro livre seguro autêntico verdadeiro pleno desarmado real limpo cristalino imortal livre das amarras do mundo das cobranças duras injustas profanas mesquinhas no julgamento cruel do humano falho amedrontado assustado culpado solitário exausto que encontrou a morada final no parceiro das eras perenes seguras.",
+        "Possuem um sério e agudo perigo de compatibilidade no choque quando um decide ou necessita da atenção material estrita nas superficialidades egoicas no reconhecimento humano fútil na glória ou cede às vaidades menores, ocorrendo frustração decepcionante brutal severa ao confrontarem visões e sentindo ausências profundas na recusa por repulsa das condescendências materiais esvaziadas no esgotamento silencioso da relação nas quebras severas idealizadas perfeitas intangíveis nas cobranças das decepções pesadas na utopia inatingível da perfeição moral absoluta frustrada fria irrealista doentia imposta sem piedade compassiva nas dinâmicas imperfeitas do viver sujo imperfeito banal instável medíocre de dia a dia da terra."
       ],
       comunicacao: [
-        "A comunicação tem uma qualidade elevada e filosófica. Vocês gostam de conversar sobre temas profundos e possuem visões de mundo ricas e bem fundamentadas.",
-        "O cuidado necessário está em trazer a conversa também para o plano emocional e cotidiano. Nem toda comunicação precisa ser profunda — às vezes, o amor se comunica na leveza do dia a dia."
+        "Inspiradora, elevada, carregada de significados e lições na troca rica madura constante nas referências plenas, os tons serenos pacíficos puros e os alinhamentos grandiosos nos horizontes de vidas, fluída e altamente compassiva benevolente tolerante compreensiva respeitosa atenta da essência humana sublime.",
+        "Silenciam letalmente nas amarguras passivas contínuas nos lamentos ressentidos de mágoas das grandes decepções tristes na evasiva crônica silenciosa fria para não criar conflitos explosivos frontais desequilibrados pesados escondendo ressentimentos amargos cruéis doloridos das pequenas frustrações diárias pequenas onde sentiram nas faltas mínimas grandes vácuos frios e que deveriam ser expostos na franqueza libertadora nos diálogos corajosos limpos frontais saudáveis."
       ],
       amorIntimidade: [
-        "A intimidade desta relação possui uma dimensão especial. O amor é vivido de forma intensa, mas também consciente e madura.",
-        "Existe grande generosidade na expressão do afeto. Ambos se sentem amados de uma forma que vai além do físico.",
-        "O desafio está em manter a chama da paixão acesa enquanto o amor se aprofunda. A intensidade emocional não precisa diminuir a paixão — elas podem coexistir.",
-        "Cultivar momentos de prazer e leveza é tão importante quanto as conversas profundas."
+        "A entrega transcende a pura química do desejo animal dos corpos e banha-se numa sacralidade lírica do romance poético sensual nas delicadezas da admiração venerada plena no carinho devotado nos olhares lentos na respiração partilhada no espaço de doação suprema irrestrita do prazer incondicional focado no deslumbramento no transe absoluto afetivo do companheiro e do amor de entrega inegoísta com a paz plena orgásmica na comunhão segura protetora carinhosa livre profunda inesquecível verdadeira pura íntima das existências de confianças infinitas de laços divinos do destino perene marcado do amor da poesia sublime romântica autêntica.",
+        "Precisam afastar o risco brutal das desconexões da libido e apatia fria estagnada melancólica doentia pela sobrecarga severa no peso energético esgotante dramático contínuo das ansiedades nos problemas do mundo onde se afogam nos cuidados ou sacrifícios extremos de abnegação retirando a vitalidade das pulsões vitais na estafa trágica do corpo exausto nas frustrações crônicas na doação do amor pleno romântico sensual carnal inibido."
       ],
       vidaFinanceira: [
-        "Financeiramente, este casal costuma não se prender excessivamente a questões materiais. Existe uma generosidade natural que, quando não balanceada, pode gerar instabilidade.",
-        "O potencial de prosperidade existe, especialmente em áreas ligadas a causas sociais, arte, saúde e educação.",
-        "Aprender a valorizar a própria energia e a receber sem culpa será uma lição importante para ambos."
+        "Vocês possuem os canais livres imensamente abundantes na prosperidade providencial que surge do nada pelo poder ético nas trocas sinceras de contribuições com a comunidade e pela criatividade na generosidade inesgotável das ações no mundo. As portas de abundância abrem nos contatos verdadeiros honestos fraternais sólidos sem os desvios frios calculistas na visão clara universal das conexões prósperas limpas inesgotáveis nos legados verdadeiros amplos abertos no poder limpo maduro íntegro respeitado seguro firme real."
       ],
-      desafiosKarmicos: [
-        "A principal lição desta união envolve o fechamento de ciclos e a capacidade de deixar ir. Haverá momentos de transformação em que será necessário se desprender de velhos padrões.",
-        "O maior aprendizado está em aprender a soltar — seja pessoas, situações ou versões antigas de si mesmos — sem carregar o peso do passado.",
-        "A leveza é a chave. Não carreguem o mundo nos ombros: vocês estão juntos para tornar a jornada mais suave, não mais pesada."
+      diaADia: [
+        "A rotina familiar flui harmoniosamente se houver absoluto respeito à agenda silenciosa de regeneração necessária perante doações do cansaço do trabalho intenso altruísta. Requerem os mergulhos vitais nos refúgios dos silêncios artísticos pacíficos do mundo nas belezas de conexão simples nas paisagens para renovarem as matrizes da mente e do coração da serenidade e da lucidez pacífica longe do barulho das massas frenéticas barulhentas agressivas impacientes ruidosas nas explorações mundanas exigentes contínuas nas redes."
       ],
-      missaoEspiritual: [
-        "O propósito deste casal é servir — não de forma submissa, mas através do exemplo de um amor que eleva e inspira.",
-        "Vocês têm o potencial de impactar a vida de muitas pessoas através da bondade, da compaixão e da sabedoria que emanam como casal.",
-        "Sua relação é, em si mesma, um presente para o mundo — mas não se esqueçam de que o primeiro presente que precisam dar é um ao outro."
+      conflitos: [
+        "Gatilhos deflagradores terríveis de cortes no estresse da raiva fria implacável do julgamento final moral impiedoso nos embates acontecem perante o vislumbre cruel das ausências de compaixão brutal mesquinha insensível de atitudes de traições nas premissas éticas absolutas inegociáveis perante si e perante inocentes no egoísmo frio calculista cínico onde os abalos desmoronam de imediato os respeitos incondicionais nos alicerces fundidos sagrados na fé inquebrantável do parceiro das ilusões utópicas no deslumbramento desfeito impiedosamente frustrado."
+      ],
+      pontosCegos: [
+        "As expectativas doentias de um nível celestial intocável imaculado do casal e do companheiro na rigidez insensível esmagadora que reprime com decepção a natureza real animalesca falha imperfeita pequena egoísta orgânica simples e mundana normal das pessoas nos atritos mesquinhos rasos diários. Não suportam perdoar os próprios defeitos terrenos fúteis ou tolerar as irritações bobas humanas no cotidiano chato da vida exigindo dos céus o purismo das luzes nos degraus de pressão inatingíveis estafantes onde a vida não acontece nos palcos poéticos da imaginação livre utópica divinizada inalcançável perigosa irreal ilusória isolada vazia solitária."
+      ],
+      crescimento: [
+        "A manifestação suprema do destino perene nos horizontes no mundo ensina através dos comportamentos de caridade de empatia inabalável as curas absolutas pela via mestra insuperável invencível do perdão incondicional sublime. Soerguem à volta onde passam nas cinzas e resgatam as humanidades dos destroços desenganados e acendem o propósito de significado eterno nas trajetórias sombrias iluminadas do sol da bondade limpa compassiva inspiradora viva autêntica poderosa profunda imortal divina livre das vaidades frias nas conexões curadoras profundas nas amizades de redenção suprema do planeta abençoado."
       ],
       potencialLongoPrazo: [
-        "Esta é uma das uniões com maior potencial de evolução ao longo do tempo. O amor de vocês tem a capacidade de se aprofundar e se transformar continuamente.",
-        "Quando bem cuidada, esta relação tem tudo para ser uma das mais significativas e duradouras, marcada pelo crescimento pessoal e pela contribuição ao mundo."
+        "Indestrutível se pautado e equilibrado na realidade crua nua cínica imperfeita onde aterrissem os voos constantes para curtir as mediocridades bobas dos erros tolos e do humor fácil ingênuo onde a vida pacata fútil rola. Sobreviverão imortais além do próprio ser nas parcerias plenas maduras calmas de compreensão nas tolerâncias absolutas unidas nos outonos sábios descansados com respeito e amores celestiais invencíveis calmos límpidos sem distúrbios plenos incondicionais da doçura terna serena invulnerável sagrada nas eras calmas unidas sem temores eternos dos corações blindados e seguros pacíficos curados divinos das almas velhas gêmeas eternas sem pressas."
       ],
       conselho: [
-        "Cuidem também de si mesmos. O mundo precisa de vocês, mas primeiro vocês precisam um do outro.",
-        "Antes de servir ao próximo, nutram a relação, cultivem o amor que os une e protejam esse espaço que é a vida de vocês dois juntos."
+        "Perdoem ativamente e riam com os tropeços da infantilidade humana boba e frágil nos caprichos mesquinhos. Não julguem o cansaço do outro que apenas quis focar frivolamente nas compras fúteis desapegando das culpas dolorosas exaustivas morais de querer salvar tudo à volta das mazelas implacáveis insolúveis intermináveis pesadas crônicas mundiais e fechem as cortinas dos mundos exaustos das brigas com egoísmos pequenos de fim de domingo num filme divertido calmo ingênuo vazio sem mensagens existenciais complexas nas cobranças exaustivas divinas estéticas perfeccionistas duras da santidade severa solitária gelada irreal intocável distante pesada dolorida isolada cobrada punida."
       ],
       mensagemFinal: [
-        "Vocês foram unidos para mostrar que o amor é capaz de transcender o individual e tocar o coletivo.",
-        "Que a história de vocês seja um exemplo de generosidade, compaixão e da beleza de amar sem medidas. Mas que nunca se esqueçam: o amor mais bonito é aquele que também cuida de si mesmo."
+        "O legado amoroso imortal dessa união transcende e abraça nas curas todas as direções nas bençãos silenciosas puras calmas nos compassos do coração forte justo compassivo desarmado verdadeiro limpo real gigante sublime da alma na evolução das eras inteiras calmas plenas de amor nas doçuras sábias e do perdão e da tolerância invencível sagrada das estrelas seguras nos braços macios do companheiro para todas as estações intocáveis imaculadas eternas."
       ]
     }
   }
 };
-
