@@ -2,30 +2,47 @@ import nodemailer from 'nodemailer';
 import { generateReportHtml } from './reportHtml.js';
 import { execute } from './db.js';
 
+let transporter = null;
+let smtpStatus = { configured: false, host: null, user: null, error: null };
+
 function getTransporter() {
   const host = process.env.SMTP_HOST;
-  if (!host) return null;
+  if (!host) {
+    smtpStatus = { configured: false, host: null, user: null, error: 'SMTP_HOST não definido' };
+    return null;
+  }
 
-  return nodemailer.createTransport({
-    host,
-    port: parseInt(process.env.SMTP_PORT || '587'),
-    secure: process.env.SMTP_SECURE === 'true',
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS
-    }
-  });
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
+  const port = parseInt(process.env.SMTP_PORT || '587');
+
+  if (!user || !pass) {
+    smtpStatus = { configured: false, host, user: null, error: 'SMTP_USER ou SMTP_PASS não definido' };
+    return null;
+  }
+
+  if (!transporter) {
+    transporter = nodemailer.createTransport({
+      host,
+      port,
+      secure: process.env.SMTP_SECURE === 'true',
+      auth: { user, pass }
+    });
+    smtpStatus = { configured: true, host, user, error: null };
+  }
+
+  return transporter;
 }
 
 async function sendResultEmail(toEmail, toName, html) {
-  const transporter = getTransporter();
-  if (!transporter) {
-    console.log('[EMAIL] SMTP não configurado. Defina SMTP_HOST, SMTP_USER e SMTP_PASS no .env');
-    return { sent: false, reason: 'SMTP_NOT_CONFIGURED' };
+  const t = getTransporter();
+  if (!t) {
+    console.log('[EMAIL] SMTP não configurado:', smtpStatus.error);
+    return { sent: false, reason: smtpStatus.error || 'SMTP_NOT_CONFIGURED' };
   }
 
   try {
-    const info = await transporter.sendMail({
+    const info = await t.sendMail({
       from: `"${process.env.SMTP_FROM_NAME || 'Teste de Afinidade'}" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
       to: `"${toName}" <${toEmail}>`,
       subject: 'Seu Mapa de Compatibilidade está pronto!',
@@ -34,9 +51,14 @@ async function sendResultEmail(toEmail, toName, html) {
     console.log(`[EMAIL] Enviado para ${toEmail}: ${info.messageId}`);
     return { sent: true, messageId: info.messageId };
   } catch (err) {
-    console.error('[EMAIL] Erro ao enviar:', err.message);
+    console.error('[EMAIL] Erro ao enviar para', toEmail, ':', err.message);
     return { sent: false, reason: err.message };
   }
+}
+
+export function getSmtpStatus() {
+  getTransporter();
+  return smtpStatus;
 }
 
 export async function sendLeadReport(lead) {

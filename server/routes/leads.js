@@ -133,7 +133,7 @@ router.get('/:id/status', (req, res) => {
   res.json({ id: lead.id, status: lead.status });
 });
 
-router.post('/:id/send-result', async (req, res) => {
+router.post('/:id/send-result', adminAuth, async (req, res) => {
   const lead = queryOne('SELECT * FROM leads WHERE id = ?', [req.params.id]);
 
   if (!lead) {
